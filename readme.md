@@ -27,9 +27,9 @@ Include the script as a background page, then refer to the original [`contentScr
 
 ```js
 const registeredScript = await chrome.contentScripts.register({
-	js: [
+	js: [{
 		file: 'myfile.js'
-	],
+	}],
 	matches: [
 		'https://google.com/*'
 	]
@@ -40,9 +40,9 @@ Additionally, if you're using [webextension-polyfill](https://github.com/mozilla
 
 ```js
 const registeredScript = await browser.contentScripts.register({
-	js: [
+	js: [{
 		file: 'myfile.js'
-	],
+	}],
 	matches: [
 		'https://google.com/*'
 	]
