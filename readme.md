@@ -1,6 +1,6 @@
 # content-scripts-register-polyfill
 
-> Chrome extension polyfill for Firefox's [browser.contentScripts.register()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register)
+> WebExtensions: Polyfill for [browser.contentScripts.register()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) for Chrome.
 
 [![Travis build status](https://api.travis-ci.com/bfred-it/content-scripts-register-polyfill.svg?branch=master)](https://travis-ci.com/bfred-it/content-scripts-register-polyfill)
 [![npm version](https://img.shields.io/npm/v/content-scripts-register-polyfill.svg)](https://www.npmjs.com/package/content-scripts-register-polyfill)
@@ -23,7 +23,7 @@ require('content-scripts-register-polyfill');
 
 ## Usage
 
-Include the script as a background page, then refer to the original [`contentScripts.register()`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register#Parameters)documentation.
+Include the script via `manifest.json`, then refer to the original [`contentScripts.register()`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) documentation.
 
 ```js
 const registeredScript = await chrome.contentScripts.register({
