@@ -8,8 +8,11 @@
   "keywords": [
     "contentScripts",
     "content scripts",
+    "programmatic injection",
     "declarativecontent",
+    "executescript"
     "declarative",
+    "RequestContentScript"
     "scripts",
     "css",
     "browser",
