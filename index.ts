@@ -44,7 +44,7 @@ async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<bo
 	return result && result[0];
 }
 
-if (!chrome.contentScripts) {
+if (typeof chrome === 'object' && !chrome.contentScripts) {
 	chrome.contentScripts = {
 		// The callback is only used by webextension-polyfill
 		async register(contentScriptOptions, callback?) {
