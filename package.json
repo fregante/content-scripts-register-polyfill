@@ -2,37 +2,37 @@
   "name": "content-scripts-register-polyfill",
   "version": "1.0.0",
   "description": "Chrome extension polyfill for Firefox's browser.contentScripts.register()",
-  "license": "MIT",
-  "repository": "bfred-it/content-scripts-register-polyfill",
-  "author": "Federico Brigante <github@bfred.it> (bfred.it)",
   "keywords": [
-    "contentScripts",
-    "content scripts",
-    "declarativecontent",
-    "declarative",
-    "scripts",
-    "css",
     "browser",
+    "content scripts",
+    "contentScripts",
+    "css",
+    "declarative",
+    "declarativecontent",
     "extension",
-    "webext",
-    "web-ext"
+    "scripts",
+    "web-ext",
+    "webext"
   ],
+  "repository": "fregante/content-scripts-register-polyfill",
+  "license": "MIT",
+  "author": "Federico Brigante <opensource@bfred.it> (bfred.it)",
   "files": [
     "index.js",
     "index.d.ts"
   ],
   "scripts": {
-    "test": "xo && tsc --noEmit",
-    "prepublishOnly": "tsc",
     "build": "tsc",
+    "prepublishOnly": "tsc",
+    "test": "xo && tsc --noEmit",
     "watch": "tsc --watch"
   },
   "xo": {
-    "extensions": [
-      "ts"
-    ],
     "envs": [
       "browser"
+    ],
+    "extensions": [
+      "ts"
     ],
     "globals": [
       "chrome"
@@ -44,6 +44,9 @@
       }
     ]
   },
+  "dependencies": {
+    "@types/firefox-webext-browser": "^67.0.2"
+  },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^0.4.0",
     "@types/chrome": "0.0.86",
@@ -52,8 +55,5 @@
     "eslint-config-xo-typescript": "^0.15.0",
     "typescript": "^3.5.0",
     "xo": "*"
-  },
-  "dependencies": {
-    "@types/firefox-webext-browser": "^67.0.2"
   }
 }
