@@ -5,6 +5,7 @@
 		"target": "es2018"
 	},
 	"files": [
+		"globals.d.ts",
 		"index.ts"
 	]
 }

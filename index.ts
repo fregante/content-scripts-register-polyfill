@@ -14,12 +14,6 @@ async function p<T>(fn, ...args): Promise<T> {
 	});
 }
 
-// eslint-disable-next-line no-undef
-type _contentScriptsRegister = typeof browser.contentScripts.register;
-declare namespace chrome.contentScripts {
-	const register: _contentScriptsRegister;
-}
-
 async function isOriginPermitted(url: string): Promise<boolean> {
 	return p(chrome.permissions.contains, {
 		origins: [new URL(url).origin + '/*']
@@ -38,7 +32,7 @@ async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<bo
 if (typeof chrome === 'object' && !chrome.contentScripts) {
 	chrome.contentScripts = {
 		// The callback is only used by webextension-polyfill
-		async register(contentScriptOptions, callback?) {
+		async register(contentScriptOptions, callback) {
 			const {
 				js = [],
 				css = [],
