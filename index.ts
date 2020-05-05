@@ -26,7 +26,7 @@ async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<bo
 		runAt: 'document_start'
 	});
 
-	return result && result[0];
+	return result?.[0];
 }
 
 if (typeof chrome === 'object' && !chrome.contentScripts) {
@@ -67,7 +67,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 						...file,
 						matchAboutBlank,
 						allFrames,
-						runAt: runAt || 'document_start' // CSS should prefer `document_start` when unspecified
+						runAt: runAt ?? 'document_start' // CSS should prefer `document_start` when unspecified
 					});
 				}
 
