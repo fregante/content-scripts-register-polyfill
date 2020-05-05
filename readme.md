@@ -1,9 +1,9 @@
-# content-scripts-register-polyfill
+# content-scripts-register-polyfill [![][badge-gzip]][link-bundlephobia]
+
+[badge-gzip]: https://img.shields.io/bundlephobia/minzip/content-scripts-register-polyfill.svg?label=gzipped
+[link-bundlephobia]: https://bundlephobia.com/result?p=content-scripts-register-polyfill
 
 > WebExtensions: Polyfill for [browser.contentScripts.register()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) for Chrome.
-
-[![Travis build status](https://api.travis-ci.com/fregante/content-scripts-register-polyfill.svg?branch=master)](https://travis-ci.com/fregante/content-scripts-register-polyfill)
-[![npm version](https://img.shields.io/npm/v/content-scripts-register-polyfill.svg)](https://www.npmjs.com/package/content-scripts-register-polyfill)
 
 ## Install
 
@@ -51,12 +51,12 @@ const registeredScript = await browser.contentScripts.register({
 
 ## Related
 
-* [webext-options-sync](https://github.com/fregante/webext-options-sync) - Helps you manage and autosave your extension's options.
-* [webext-domain-permission-toggle](https://github.com/fregante/webext-domain-permission-toggle) - Browser-action context menu to request permission for the current tab.
-* [webext-dynamic-content-scripts](https://github.com/fregante/webext-dynamic-content-scripts) - Automatically inject your `content_scripts` on custom domains.
-* [webext-detect-page](https://github.com/fregante/webext-detect-page) - Detects where the current browser extension code is being run.
-* [webext-content-script-ping](https://github.com/fregante/webext-content-script-ping) - One-file interface to detect whether your content script have loaded.
-* [`Awesome WebExtensions`](https://github.com/fregante/Awesome-WebExtensions): A curated list of awesome resources for Web Extensions development.
+- [webext-options-sync](https://github.com/fregante/webext-options-sync) - Helps you manage and autosave your extension's options.
+- [webext-domain-permission-toggle](https://github.com/fregante/webext-domain-permission-toggle) - Browser-action context menu to request permission for the current tab.
+- [webext-dynamic-content-scripts](https://github.com/fregante/webext-dynamic-content-scripts) - Automatically inject your `content_scripts` on custom domains.
+- [webext-detect-page](https://github.com/fregante/webext-detect-page) - Detects where the current browser extension code is being run.
+- [webext-content-script-ping](https://github.com/fregante/webext-content-script-ping) - One-file interface to detect whether your content script have loaded.
+- [`Awesome WebExtensions`](https://github.com/fregante/Awesome-WebExtensions): A curated list of awesome resources for Web Extensions development.
 
 ## License
 
