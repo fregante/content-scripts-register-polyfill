@@ -45,7 +45,8 @@
     ]
   },
   "dependencies": {
-    "@types/firefox-webext-browser": "^67.0.2"
+    "@types/firefox-webext-browser": "^67.0.2",
+    "webext-patterns": "^0.9.0"
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^0.4.0",

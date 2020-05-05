@@ -1,13 +1,4 @@
-function urlGlobToRegex(matchPattern: string): string {
-	return '^' + matchPattern
-		.replace(/[.]/g, '\\.') // Escape dots
-		.replace(/[?]/, '.') // Single-character wildcards
-		.replace(/^[*]:/, 'https?') // Protocol
-		.replace(/^(https[?]?:[/][/])[*]/, '$1[^/:]+') // Subdomain wildcard
-		.replace(/[/][*]/, '/?.+') // Whole path wildcards (so it can match the whole origin)
-		.replace(/[*]/g, '.+') // Path wildcards
-		.replace(/[/]/g, '\\/'); // Escape slashes
-}
+import {patternToRegex} from 'webext-patterns';
 
 // @ts-ignore
 async function p<T>(fn, ...args): Promise<T> {
@@ -59,7 +50,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			// Injectable code; it sets a `true` property on `document` with the hash of the files as key.
 			const loadCheck = `document[${JSON.stringify(JSON.stringify({js, css}))}]`;
 
-			const matchesRegex = new RegExp(matches.map(urlGlobToRegex).join('$') + '$');
+			const matchesRegex = patternToRegex(...matches);
 
 			const listener = async (tabId: number, {status}: chrome.tabs.TabChangeInfo): Promise<void> => {
 				if (status !== 'loading') {
