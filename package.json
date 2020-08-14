@@ -19,7 +19,8 @@
 	"author": "Federico Brigante <opensource@bfred.it> (bfred.it)",
 	"files": [
 		"index.js",
-		"index.d.ts"
+		"index.d.ts",
+		"global.d.ts"
 	],
 	"scripts": {
 		"build": "tsc",

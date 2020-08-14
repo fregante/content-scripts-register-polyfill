@@ -1,8 +1,9 @@
-// eslint-disable-next-line no-undef
-type ContentScriptsRegister = typeof browser.contentScripts.register;
+// https://www.typescriptlang.org/docs/handbook/namespaces.html#aliases
+import CS = browser.contentScripts;
+
 declare namespace chrome.contentScripts {
-	const register: (
-		contentScriptOptions: browser.contentScripts.RegisteredContentScriptOptions,
-		callback?: RegistrationCallback
-	) => Promise<browser.contentScripts.RegisteredContentScript>;
+	function register(
+		contentScriptOptions: CS.RegisteredContentScriptOptions,
+		callback?: (contentScript: CS.RegisteredContentScript) => void
+	): Promise<CS.RegisteredContentScript>;
 }

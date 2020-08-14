@@ -1,3 +1,4 @@
+import './globals';
 import {patternToRegex} from 'webext-patterns';
 
 // @ts-ignore
