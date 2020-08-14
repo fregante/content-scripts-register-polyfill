@@ -1,10 +1,10 @@
-import './globals';
 import {patternToRegex} from 'webext-patterns';
+import './globals';
 
-// @ts-ignore
+// @ts-expect-error
 async function p<T>(fn, ...args): Promise<T> {
 	return new Promise((resolve, reject) => {
-		// @ts-ignore
+		// @ts-expect-error
 		fn(...args, result => {
 			if (chrome.runtime.lastError) {
 				reject(chrome.runtime.lastError);
