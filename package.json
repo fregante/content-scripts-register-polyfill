@@ -36,6 +36,7 @@
 			"chrome"
 		],
 		"rules": {
+			"@typescript-eslint/triple-slash-reference": "off",
 			"import/no-unassigned-import": "off"
 		}
 	},

@@ -1,5 +1,6 @@
+/// <reference path="./globals.d.ts" />
+
 import {patternToRegex} from 'webext-patterns';
-import './globals';
 
 // @ts-expect-error
 async function p<T>(fn, ...args): Promise<T> {
