@@ -126,10 +126,10 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				});
 			};
 
-			void browser.tabs.onUpdated.addListener(listener);
+			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return browser.tabs.onUpdated.removeListener(listener);
+					return chrome.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
