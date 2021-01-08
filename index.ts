@@ -2,28 +2,64 @@
 
 import {patternToRegex} from 'webext-patterns';
 
-// @ts-expect-error
-async function p<T>(fn, ...args): Promise<T> {
-	return new Promise((resolve, reject) => {
-		// @ts-expect-error
-		fn(...args, result => {
-			if (chrome.runtime.lastError) {
-				reject(chrome.runtime.lastError);
-			} else {
-				resolve(result);
+function webextensionPartialfill(apis: string[]): typeof window.browser {
+	if (window.browser) {
+		return window.browser;
+	}
+
+	const clone = {};
+	for (const path of apis) {
+		const segments = path.split('.');
+		const [namespace] = segments;
+		let localChrome = chrome; // Get from this
+		let localBrowser = clone; // Set to this
+		for (const segment of segments) {
+			// @ts-expect-error
+			localChrome = localChrome[segment];
+			if (typeof localChrome === 'function') {
+				// @ts-expect-error
+				localBrowser[segment] = async (...arguments_: any[]) => new Promise((resolve, reject) => {
+					// @ts-expect-error
+					localChrome.call(chrome[namespace], ...arguments_, result => {
+						if (chrome.runtime.lastError) {
+							reject(chrome.runtime.lastError);
+						} else {
+							resolve(result);
+						}
+					});
+				});
+				break;
+				// @ts-expect-error
+			} else if (!localBrowser[segment]) {
+				// @ts-expect-error
+				localBrowser[segment] = {};
 			}
-		});
-	});
+
+			// @ts-expect-error
+			localBrowser = localBrowser[segment];
+		}
+	}
+
+	return clone as typeof window.browser;
 }
 
+const browser = webextensionPartialfill([
+	'permissions.contains',
+	'tabs.executeScript',
+	'tabs.get',
+	'tabs.insertCSS',
+	'tabs.onUpdated.addListener',
+	'tabs.onUpdated.removeListener'
+]);
+
 async function isOriginPermitted(url: string): Promise<boolean> {
-	return p(chrome.permissions.contains, {
+	return browser.permissions.contains({
 		origins: [new URL(url).origin + '/*']
 	});
 }
 
 async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<boolean> {
-	const result = await p<boolean[]>(chrome.tabs.executeScript, tabId, {
+	const result = await browser.tabs.executeScript(tabId, {
 		code: loadCheck,
 		runAt: 'document_start'
 	});
@@ -53,7 +89,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 					return;
 				}
 
-				const {url} = await p(chrome.tabs.get, tabId);
+				const {url} = await browser.tabs.get(tabId);
 
 				if (
 					!url || // No URL = no permission;
@@ -65,7 +101,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of css) {
-					chrome.tabs.insertCSS(tabId, {
+					void browser.tabs.insertCSS(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -74,7 +110,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of js) {
-					chrome.tabs.executeScript(tabId, {
+					void browser.tabs.executeScript(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -83,17 +119,17 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				// Mark as loaded
-				chrome.tabs.executeScript(tabId, {
+				void browser.tabs.executeScript(tabId, {
 					code: `${loadCheck} = true`,
 					runAt: 'document_start',
 					allFrames
 				});
 			};
 
-			chrome.tabs.onUpdated.addListener(listener);
+			void browser.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return p(chrome.tabs.onUpdated.removeListener.bind(chrome.tabs.onUpdated), listener);
+					return browser.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
