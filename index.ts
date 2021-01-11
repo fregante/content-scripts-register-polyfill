@@ -2,55 +2,24 @@
 
 import {patternToRegex} from 'webext-patterns';
 
-function webextensionPartialfill(apis: string[]): typeof window.browser {
-	if (window.browser) {
-		return window.browser;
-	}
-
-	const clone = {};
-	for (const path of apis) {
-		const segments = path.split('.');
-		const [namespace] = segments;
-		let localChrome = chrome; // Get from this
-		let localBrowser = clone; // Set to this
-		for (const segment of segments) {
-			// @ts-expect-error
-			localChrome = localChrome[segment];
-			if (typeof localChrome === 'function') {
-				// @ts-expect-error
-				localBrowser[segment] = async (...arguments_: any[]) => new Promise((resolve, reject) => {
-					// @ts-expect-error
-					localChrome.call(chrome[namespace], ...arguments_, result => {
-						if (chrome.runtime.lastError) {
-							reject(chrome.runtime.lastError);
-						} else {
-							resolve(result);
-						}
-					});
-				});
-				break;
-				// @ts-expect-error
-			} else if (!localBrowser[segment]) {
-				// @ts-expect-error
-				localBrowser[segment] = {};
-			}
-
-			// @ts-expect-error
-			localBrowser = localBrowser[segment];
+function nestedProxy(target) {
+    return new Proxy(target, {get(target, prop, receiver) {
+        if (typeof target[prop] !== 'function') {
+	        return nestedProxy(target[prop]);
 		}
-	}
-
-	return clone as typeof window.browser;
+		return (...arguments_) => 
+			target[prop].call(target, ...arguments_, result => {
+				if (chrome.runtime.lastError) {
+					reject(chrome.runtime.lastError);
+				} else {
+					resolve(result);
+				}
+			});
+		};
+    }})
 }
 
-const browser = webextensionPartialfill([
-	'permissions.contains',
-	'tabs.executeScript',
-	'tabs.get',
-	'tabs.insertCSS',
-	'tabs.onUpdated.addListener',
-	'tabs.onUpdated.removeListener'
-]);
+const browser = window.browser ?? nestedProxy(chrome);
 
 async function isOriginPermitted(url: string): Promise<boolean> {
 	return browser.permissions.contains({
