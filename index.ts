@@ -7,7 +7,8 @@ function nestedProxy(target) {
         if (typeof target[prop] !== 'function') {
 	        return nestedProxy(target[prop]);
 		}
-		return (...arguments_) => 
+
+		return (...arguments_) => new Promise((resolve, reject) => {
 			target[prop].call(target, ...arguments_, result => {
 				if (chrome.runtime.lastError) {
 					reject(chrome.runtime.lastError);
@@ -15,8 +16,8 @@ function nestedProxy(target) {
 					resolve(result);
 				}
 			});
-		};
-    }})
+		});
+    }});
 }
 
 const browser = window.browser ?? nestedProxy(chrome);
@@ -70,7 +71,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of css) {
-					void browser.tabs.insertCSS(tabId, {
+					chrome.tabs.insertCSS(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -79,7 +80,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of js) {
-					void browser.tabs.executeScript(tabId, {
+					chrome.tabs.executeScript(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -88,7 +89,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				// Mark as loaded
-				void browser.tabs.executeScript(tabId, {
+				chrome.tabs.executeScript(tabId, {
 					code: `${loadCheck} = true`,
 					runAt: 'document_start',
 					allFrames
@@ -98,7 +99,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return chrome.tabs.onUpdated.removeListener(listener);
+					return browser.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
