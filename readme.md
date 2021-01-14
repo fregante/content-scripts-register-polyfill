@@ -17,10 +17,6 @@ npm install content-scripts-register-polyfill
 import 'content-scripts-register-polyfill';
 ```
 
-```js
-require('content-scripts-register-polyfill');
-```
-
 ## Usage
 
 Include the script via `manifest.json`, then refer to the original [`contentScripts.register()`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) documentation.
