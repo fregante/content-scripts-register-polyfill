@@ -1,35 +1,17 @@
 /// <reference path="./globals.d.ts" />
 
+import chromeP from 'webext-polyfill-kinda';
 import {patternToRegex} from 'webext-patterns';
 
-function nestedProxy(target) {
-    return new Proxy(target, {get(target, prop, receiver) {
-        if (typeof target[prop] !== 'function') {
-	        return nestedProxy(target[prop]);
-		}
-
-		return (...arguments_) => new Promise((resolve, reject) => {
-			target[prop].call(target, ...arguments_, result => {
-				if (chrome.runtime.lastError) {
-					reject(chrome.runtime.lastError);
-				} else {
-					resolve(result);
-				}
-			});
-		});
-    }});
-}
-
-const browser = window.browser ?? nestedProxy(chrome);
 
 async function isOriginPermitted(url: string): Promise<boolean> {
-	return browser.permissions.contains({
+	return chromeP.permissions.contains({
 		origins: [new URL(url).origin + '/*']
 	});
 }
 
 async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<boolean> {
-	const result = await browser.tabs.executeScript(tabId, {
+	const result = await chromeP.tabs.executeScript(tabId, {
 		code: loadCheck,
 		runAt: 'document_start'
 	});
@@ -59,7 +41,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 					return;
 				}
 
-				const {url} = await browser.tabs.get(tabId);
+				const {url} = await chromeP.tabs.get(tabId);
 
 				if (
 					!url || // No URL = no permission;
@@ -99,7 +81,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return browser.tabs.onUpdated.removeListener(listener);
+					return chromeP.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
