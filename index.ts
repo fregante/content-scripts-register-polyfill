@@ -3,7 +3,6 @@
 import chromeP from 'webext-polyfill-kinda';
 import {patternToRegex} from 'webext-patterns';
 
-
 async function isOriginPermitted(url: string): Promise<boolean> {
 	return chromeP.permissions.contains({
 		origins: [new URL(url).origin + '/*']
