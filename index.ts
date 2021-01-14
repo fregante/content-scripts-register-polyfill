@@ -1,29 +1,16 @@
 /// <reference path="./globals.d.ts" />
 
+import chromeP from 'webext-polyfill-kinda';
 import {patternToRegex} from 'webext-patterns';
 
-// @ts-expect-error
-async function p<T>(fn, ...args): Promise<T> {
-	return new Promise((resolve, reject) => {
-		// @ts-expect-error
-		fn(...args, result => {
-			if (chrome.runtime.lastError) {
-				reject(chrome.runtime.lastError);
-			} else {
-				resolve(result);
-			}
-		});
-	});
-}
-
 async function isOriginPermitted(url: string): Promise<boolean> {
-	return p(chrome.permissions.contains, {
+	return chromeP.permissions.contains({
 		origins: [new URL(url).origin + '/*']
 	});
 }
 
 async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<boolean> {
-	const result = await p<boolean[]>(chrome.tabs.executeScript, tabId, {
+	const result = await chromeP.tabs.executeScript(tabId, {
 		code: loadCheck,
 		runAt: 'document_start'
 	});
@@ -53,7 +40,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 					return;
 				}
 
-				const {url} = await p(chrome.tabs.get, tabId);
+				const {url} = await chromeP.tabs.get(tabId);
 
 				if (
 					!url || // No URL = no permission;
@@ -93,7 +80,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return p(chrome.tabs.onUpdated.removeListener.bind(chrome.tabs.onUpdated), listener);
+					return chromeP.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
