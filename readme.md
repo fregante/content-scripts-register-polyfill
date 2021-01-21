@@ -56,4 +56,4 @@ const registeredScript = await browser.contentScripts.register({
 
 ## License
 
-MIT © [Federico Brigante](https://bfred.it)
+MIT © [Federico Brigante](https://fregante.com)
