@@ -80,7 +80,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
-					return chromeP.tabs.onUpdated.removeListener(listener);
+					chromeP.tabs.onUpdated.removeListener(listener);
 				}
 			};
 
