@@ -1,6 +1,6 @@
 env:
   IMPORT_TEXT: import
-  NPM_MODULE_NAME: content-script-register-polyfill
+  NPM_MODULE_NAME: content-scripts-register-polyfill
 
 # DO NOT EDIT BELOW, USE: npx ghat fregante/ghatemplates/esm-lint
 
