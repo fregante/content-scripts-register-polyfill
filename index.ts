@@ -78,6 +78,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			chrome.tabs.onUpdated.addListener(listener);
 			const registeredContentScript = {
 				async unregister() {
+					// @ts-expect-error It complains about a (unused) mismatching property in Tab
 					chromeP.tabs.onUpdated.removeListener(listener);
 				}
 			};
