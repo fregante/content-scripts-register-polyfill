@@ -38,6 +38,9 @@
 		"globals": [
 			"chrome"
 		],
+		"ignores": [
+			"test/demo-extension"
+		],
 		"rules": {
 			"@typescript-eslint/triple-slash-reference": "off",
 			"import/no-unassigned-import": "off"
