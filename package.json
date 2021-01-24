@@ -48,8 +48,8 @@
 	},
 	"dependencies": {
 		"@types/firefox-webext-browser": "^82.0.0",
-		"webext-patterns": "^0.9.1",
-		"webext-polyfill-kinda": "0.0.1"
+		"webext-patterns": "^1.0.0",
+		"webext-polyfill-kinda": "0.0.2"
 	},
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^0.8.0",
