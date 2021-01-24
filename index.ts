@@ -35,18 +35,16 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 
 			const matchesRegex = patternToRegex(...matches);
 
-			const listener = async (tabId: number, {status}: chrome.tabs.TabChangeInfo): Promise<void> => {
-				if (status !== 'loading') {
-					return;
-				}
-
-				const {url} = await chromeP.tabs.get(tabId);
-
+			const listener = async (
+				tabId: number,
+				_: chrome.tabs.TabChangeInfo, // Not reliable at all. It might contain `url` or it might not
+				{url}: chrome.tabs.Tab
+			): Promise<void> => {
 				if (
-					!url || // No URL = no permission;
+					!url || // No URL = no permission
 					!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Permissions check
-					await wasPreviouslyLoaded(tabId, loadCheck) // Double-injection avoidance
+					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
+					await wasPreviouslyLoaded(tabId, loadCheck) // Avoid double-injection
 				) {
 					return;
 				}
