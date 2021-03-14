@@ -7,7 +7,7 @@
 
 ## Install
 
-You can just download the [standalone bundle](https://packd.fregante.now.sh/content-scripts-register-polyfill) (it might take a minute to download) and include the file in your `manifest.json`, or:
+You can download the [standalone bundle](https://bundle.fregante.com/?pkg=content-scripts-register-polyfill) and include it in your `manifest.json`.
 
 ```sh
 npm install content-scripts-register-polyfill
