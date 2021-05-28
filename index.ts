@@ -9,13 +9,16 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 	});
 }
 
-async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<boolean> {
+async function wasPreviouslyLoaded(
+	tabId: number,
+	loadCheck: string
+): Promise<boolean> {
 	const result = await chromeP.tabs.executeScript(tabId, {
 		code: loadCheck,
 		runAt: 'document_start'
 	});
 
-	return result?.[0];
+	return result?.[0] as boolean;
 }
 
 if (typeof chrome === 'object' && !chrome.contentScripts) {
@@ -50,7 +53,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of css) {
-					chrome.tabs.insertCSS(tabId, {
+					void chrome.tabs.insertCSS(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -59,7 +62,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				for (const file of js) {
-					chrome.tabs.executeScript(tabId, {
+					void chrome.tabs.executeScript(tabId, {
 						...file,
 						matchAboutBlank,
 						allFrames,
@@ -68,7 +71,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 
 				// Mark as loaded
-				chrome.tabs.executeScript(tabId, {
+				void chrome.tabs.executeScript(tabId, {
 					code: `${loadCheck} = true`,
 					runAt: 'document_start',
 					allFrames

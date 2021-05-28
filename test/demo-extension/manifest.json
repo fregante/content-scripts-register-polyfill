@@ -3,15 +3,27 @@
 	"version": "0.0.0",
 	"manifest_version": 2,
 	"permissions": [
-		"https://www.google.com/*",
-		"activeTab"
+		"https://www.google.com/*"
 	],
-  "browser_action": {
-    "default_title": "Make this page red"
-  },
+	"browser_action": {
+		"default_title": "Make this page red"
+	},
 	"background": {
 		"scripts": [
-			"content-scripts-register-polyfill.js"
+			"background.js"
 		]
-	}
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://www.google.com/*"
+			],
+			"js": [
+				"static.js"
+			],
+			"css": [
+				"static.css"
+			]
+		}
+	]
 }
