@@ -25,8 +25,8 @@
 		"globals.d.ts"
 	],
 	"targets": {
-    "main": false
-  },
+		"main": false
+	},
 	"scripts": {
 		"build": "tsc",
 		"demo:watch": "parcel watch test/demo-extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",

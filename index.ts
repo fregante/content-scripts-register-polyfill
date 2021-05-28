@@ -9,7 +9,10 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 	});
 }
 
-async function wasPreviouslyLoaded(tabId: number, loadCheck: string): Promise<boolean> {
+async function wasPreviouslyLoaded(
+	tabId: number,
+	loadCheck: string
+): Promise<boolean> {
 	const result = await chromeP.tabs.executeScript(tabId, {
 		code: loadCheck,
 		runAt: 'document_start'
