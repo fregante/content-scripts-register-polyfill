@@ -24,9 +24,13 @@
 		"index.d.ts",
 		"globals.d.ts"
 	],
+	"targets": {
+    "main": false
+  },
 	"scripts": {
 		"build": "tsc",
-		"demo:watch": "parcel test/demo-extension/manifest.json --dist-dir test/dist --no-cache --detailed-report 0",
+		"demo:watch": "parcel watch test/demo-extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",
+		"demo:build": "parcel build test/demo-extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
 		"prepack": "tsc --sourceMap false",
 		"test": "xo && tsc --noEmit",
 		"watch": "tsc --watch"
@@ -57,7 +61,7 @@
 		"xo": "^0.40.1"
 	},
 	"webExt": {
-		"sourceDir": "test/demo-extension",
+		"sourceDir": "test/dist",
 		"run": {
 			"startUrl": [
 				"https://www.google.com"

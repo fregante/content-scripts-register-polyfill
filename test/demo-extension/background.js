@@ -1,4 +1,4 @@
-import '../../'; // `content-scripts-register-polyfill`
+import '../..'; // `content-scripts-register-polyfill`
 
 console.log('Background loaded');
 
