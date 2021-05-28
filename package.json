@@ -38,9 +38,6 @@
 		"globals": [
 			"chrome"
 		],
-		"ignores": [
-			"test/demo-extension"
-		],
 		"rules": {
 			"@typescript-eslint/triple-slash-reference": "off",
 			"import/no-unassigned-import": "off"
@@ -56,5 +53,8 @@
 		"@types/chrome": "0.0.143",
 		"typescript": "^4.3.2",
 		"xo": "^0.40.1"
+	},
+	"webExt": {
+		"sourceDir": "test/demo-extension"
 	}
 }

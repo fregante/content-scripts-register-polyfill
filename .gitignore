@@ -10,3 +10,4 @@ logs
 *.map
 index.js
 index.d.ts
+test/demo-extension/content-scripts-register-polyfill.js
