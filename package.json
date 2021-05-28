@@ -44,7 +44,9 @@
 		],
 		"rules": {
 			"@typescript-eslint/triple-slash-reference": "off",
-			"import/no-unassigned-import": "off"
+			"import/extensions": "off",
+			"import/no-unassigned-import": "off",
+			"node/file-extension-in-import": "off"
 		}
 	},
 	"dependencies": {
