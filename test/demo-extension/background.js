@@ -1,3 +1,5 @@
+import '../../'; // `content-scripts-register-polyfill`
+
 console.log('Background loaded');
 
 chrome.contentScripts.register({
