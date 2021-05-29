@@ -11,11 +11,21 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 
 async function wasPreviouslyLoaded(
 	tabId: number,
-	loadCheck: string
+	args: Record<string, any>
 ): Promise<boolean> {
+	// Checks and sets a global variable
+	const loadCheck = (key: string): boolean => {
+		// @ts-expect-error "No index signature"
+		const wasLoaded = document[key] as boolean;
+
+		// @ts-expect-error "No index signature"
+		document[key] = true;
+		return wasLoaded;
+	};
+
+	// Safe code injection + argument passing
 	const result = await chromeP.tabs.executeScript(tabId, {
-		code: loadCheck,
-		runAt: 'document_start'
+		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`
 	});
 
 	return result?.[0] as boolean;
@@ -33,21 +43,19 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				matches,
 				runAt
 			} = contentScriptOptions;
-			// Injectable code; it sets a `true` property on `document` with the hash of the files as key.
-			const loadCheck = `document[${JSON.stringify(JSON.stringify({js, css}))}]`;
-
 			const matchesRegex = patternToRegex(...matches);
 
 			const listener = async (
 				tabId: number,
-				_: chrome.tabs.TabChangeInfo, // Not reliable at all. It might contain `url` or it might not
+				{status}: chrome.tabs.TabChangeInfo,
 				{url}: chrome.tabs.Tab
 			): Promise<void> => {
 				if (
+					!status || // Only status updates are relevant
 					!url || // No URL = no permission
 					!matchesRegex.test(url) || // Manual `matches` glob matching
 					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, loadCheck) // Avoid double-injection
+					await wasPreviouslyLoaded(tabId, {js, css}) // Avoid double-injection
 				) {
 					return;
 				}
@@ -69,13 +77,6 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 						runAt
 					});
 				}
-
-				// Mark as loaded
-				void chrome.tabs.executeScript(tabId, {
-					code: `${loadCheck} = true`,
-					runAt: 'document_start',
-					allFrames
-				});
 			};
 
 			chrome.tabs.onUpdated.addListener(listener);
