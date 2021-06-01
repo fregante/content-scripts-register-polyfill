@@ -1,3 +1,9 @@
-body {
-	background: papayawhip !important;
+html {
+	border: solid 4px cornflowerblue;
+}
+html:before {
+	content: 'DYNAMIC CSS LOADED';
+	font-size: 30px;
+	background: cornflowerblue;
+	display: inline-block;
 }

@@ -3,7 +3,8 @@
 	"version": "0.0.0",
 	"manifest_version": 2,
 	"permissions": [
-		"https://www.google.com/*"
+		"https://www.google.com/*",
+		"http://localhost/*"
 	],
 	"browser_action": {
 		"default_title": "Make this page red"
@@ -17,6 +18,18 @@
 		{
 			"matches": [
 				"https://www.google.com/*"
+			],
+			"js": [
+				"static.js"
+			],
+			"css": [
+				"static.css"
+			]
+		},
+		{
+			"all_frames": true,
+			"matches": [
+				"http://localhost/"
 			],
 			"js": [
 				"static.js"

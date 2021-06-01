@@ -1,3 +1,9 @@
 body {
-	transform: rotate(5deg);
+	border: solid 4px papayawhip;
+}
+body:before {
+	content: 'STATIC CSS LOADED';
+	font-size: 30px;
+	background: papayawhip;
+	display: inline-block;
 }
