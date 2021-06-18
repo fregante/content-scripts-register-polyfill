@@ -16,14 +16,13 @@ describe('regular page', () => {
 		await expect(page).toMatchElement('.static');
 	});
 
+	it('should load dynamic content script', async () => {
+		await expect(page).toMatchElement('.dynamic');
+	});
+
 	it('should load static content script after a reload', async () => {
 		await page.reload();
 		await expect(page).toMatchElement('.static');
-	});
-
-	it('should load dynamic content script', async () => {
-		// TODO: Only one!
-		await expect(page).toMatchElement('.dynamic');
 	});
 
 	it('should load dynamic content script after a reload', async () => {
@@ -50,6 +49,11 @@ describe('iframe', () => {
 
 	it('should load dynamic content script', async () => {
 		await expect(iframe).toMatchElement('.dynamic');
+	});
+
+	it('should load static content script after a reload', async () => {
+		await iframe.goto(iframe.url());
+		await expect(iframe).toMatchElement('.static');
 	});
 
 	it.skip('should load dynamic content script after a reload', async () => {
