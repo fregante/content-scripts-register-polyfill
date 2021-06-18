@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-module */
 const path = require('path');
 
 const extension = path.resolve(__dirname, 'test/dist');
