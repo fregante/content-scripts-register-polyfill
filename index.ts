@@ -34,6 +34,7 @@ async function wasPreviouslyLoaded(
 }
 
 if (typeof chrome === 'object' && !chrome.contentScripts) {
+	const gotNavigation = 'webNavigation' in chrome;
 	chrome.contentScripts = {
 		// The callback is only used by webextension-polyfill
 		async register(contentScriptOptions, callback) {
@@ -45,13 +46,21 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				runAt
 			} = contentScriptOptions;
 			let {allFrames} = contentScriptOptions;
-			if ('webNavigation' in chrome) {
+			if (gotNavigation) {
 				allFrames = false;
 			}
 
 			const matchesRegex = patternToRegex(...matches);
 
-			const inject = (tabId: number, frameId?: number) => {
+			const inject = async (url: string, tabId: number, frameId?: number) => {
+				if (
+					!matchesRegex.test(url) || // Manual `matches` glob matching
+					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
+					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
+				) {
+					return;
+				}
+
 				for (const file of css) {
 					void chrome.tabs.insertCSS(tabId, {
 						...file,
@@ -73,53 +82,34 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				}
 			};
 
-			const listener = async (
+			const tabListener = async (
 				tabId: number,
 				{status}: chrome.tabs.TabChangeInfo,
 				{url}: chrome.tabs.Tab
 			): Promise<void> => {
-				if (
-					!status || // Only status updates are relevant
-					!url || // No URL = no permission
-					!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, undefined, {js, css}) // Avoid double-injection
-				) {
-					return;
+				// Only status updates are relevant
+				// No URL = no permission
+				if (status && url) {
+					void inject(url, tabId);
 				}
-
-				inject(tabId);
 			};
 
-			const navListener = async ({
-				tabId,
-				frameId,
-				url
-			}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
-				if (
-					!url || // No URL = no permission // TODO: check
-					!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
-				) {
-					return;
-				}
-
-				inject(tabId, frameId);
+			const navListener = async ({tabId, frameId, url}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
+				void inject(url, tabId, frameId);
 			};
 
-			if ('webNavigation' in chrome) {
+			if (gotNavigation) {
 				chrome.webNavigation.onCommitted.addListener(navListener);
 			} else {
-				chrome.tabs.onUpdated.addListener(listener);
+				chrome.tabs.onUpdated.addListener(tabListener);
 			}
 
 			const registeredContentScript = {
 				async unregister() {
-					if ('webNavigation' in chrome) {
+					if (gotNavigation) {
 						chrome.webNavigation.onCommitted.removeListener(navListener);
 					} else {
-						chrome.tabs.onUpdated.removeListener(listener);
+						chrome.tabs.onUpdated.removeListener(tabListener);
 					}
 				}
 			};
