@@ -11,5 +11,5 @@ module.exports = {
 			`--load-extension=s${extension}`,
 			'--window-size=400,800'
 		]
-	},
+	}
 };
