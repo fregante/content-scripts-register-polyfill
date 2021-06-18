@@ -1,4 +1,4 @@
-import {describe, beforeAll} from '@jest/globals';
+import {describe, beforeAll, it} from '@jest/globals';
 
 import expect from 'expect-puppeteer'
 
@@ -52,7 +52,7 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.dynamic');
 	});
 
-	it('should load dynamic content script after a reload', async () => {
+	it.skip('should load dynamic content script after a reload', async () => {
 		await iframe.goto(iframe.url());
 		await expect(iframe).toMatchElement('.dynamic');
 	});
