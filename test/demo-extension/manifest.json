@@ -3,11 +3,9 @@
 	"version": "0.0.0",
 	"manifest_version": 2,
 	"permissions": [
-		"https://www.google.com/*"
+		"https://iframe-test-page.vercel.app/*",
+		"https://iframe-test-page-n786423ca-fregante.vercel.app/*"
 	],
-	"browser_action": {
-		"default_title": "Make this page red"
-	},
 	"background": {
 		"scripts": [
 			"background.js"
@@ -15,8 +13,21 @@
 	},
 	"content_scripts": [
 		{
+			"all_frames": true,
 			"matches": [
-				"https://www.google.com/*"
+				"https://iframe-test-page.vercel.app/*"
+			],
+			"js": [
+				"static.js"
+			],
+			"css": [
+				"static.css"
+			]
+		},
+		{
+			"all_frames": true,
+			"matches": [
+				"https://iframe-test-page-n786423ca-fregante.vercel.app/*"
 			],
 			"js": [
 				"static.js"
