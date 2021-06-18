@@ -1,97 +1,128 @@
-/// <reference path="./globals.d.ts" />
+// Adapted from: https://github.com/fregante/content-scripts-register-polyfill/blob/master/index.ts
+// Changes: use onDOMContentLoaded instead of tabUpdated
 
-import chromeP from 'webext-polyfill-kinda';
-import {patternToRegex} from 'webext-patterns';
+import { patternToRegex } from "webext-patterns";
+import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
+
+// @ts-expect-error
+async function p<T>(fn, ...args): Promise<T> {
+  return new Promise((resolve, reject) => {
+    // @ts-expect-error
+    fn(...args, (result) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 
 async function isOriginPermitted(url: string): Promise<boolean> {
-	return chromeP.permissions.contains({
-		origins: [new URL(url).origin + '/*']
-	});
+  return p(chrome.permissions.contains, {
+    origins: [new URL(url).origin + "/*"],
+  });
 }
 
 async function wasPreviouslyLoaded(
-	tabId: number,
-	args: Record<string, any>
+  tabId: number,
+  frameId: number,
+  loadCheck: string
 ): Promise<boolean> {
-	// Checks and sets a global variable
-	const loadCheck = (key: string): boolean => {
-		// @ts-expect-error "No index signature"
-		const wasLoaded = document[key] as boolean;
-
-		// @ts-expect-error "No index signature"
-		document[key] = true;
-		return wasLoaded;
-	};
-
-	// Safe code injection + argument passing
-	const result = await chromeP.tabs.executeScript(tabId, {
-		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`
-	});
-
-	return result?.[0] as boolean;
+  const result = await p<boolean[]>(chrome.tabs.executeScript, tabId, {
+    code: loadCheck,
+    frameId: frameId,
+    runAt: "document_start",
+  });
+  return result?.[0];
 }
 
-if (typeof chrome === 'object' && !chrome.contentScripts) {
-	chrome.contentScripts = {
-		// The callback is only used by webextension-polyfill
-		async register(contentScriptOptions, callback) {
-			const {
-				js = [],
-				css = [],
-				allFrames,
-				matchAboutBlank,
-				matches,
-				runAt
-			} = contentScriptOptions;
-			const matchesRegex = patternToRegex(...matches);
+if (typeof chrome === "object" && !chrome.contentScripts) {
+  chrome.contentScripts = {
+    // The callback is only used by webextension-polyfill
+    async register(contentScriptOptions, callback) {
+      const {
+        js = [],
+        css = [],
+        matchAboutBlank,
+        matches,
+        runAt,
+      } = contentScriptOptions;
+      // Injectable code; it sets a `true` property on `document` with the hash of the files as key.
+      const loadCheck = `document[${JSON.stringify(
+        JSON.stringify({ js, css })
+      )}]`;
 
-			const listener = async (
-				tabId: number,
-				{status}: chrome.tabs.TabChangeInfo,
-				{url}: chrome.tabs.Tab
-			): Promise<void> => {
-				if (
-					!status || // Only status updates are relevant
-					!url || // No URL = no permission
-					!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, {js, css}) // Avoid double-injection
-				) {
-					return;
-				}
+      const matchesRegex = patternToRegex(...matches);
 
-				for (const file of css) {
-					void chrome.tabs.insertCSS(tabId, {
-						...file,
-						matchAboutBlank,
-						allFrames,
-						runAt: runAt ?? 'document_start' // CSS should prefer `document_start` when unspecified
-					});
-				}
+      const listener = async ({
+        tabId,
+        frameId,
+        url,
+      }: OnDOMContentLoadedDetailsType): Promise<void> => {
+        if (
+          !url || // No URL = no permission;
+          !matchesRegex.test(url) || // Manual `matches` glob matching
+          !(await isOriginPermitted(url)) || // Permissions check
+          (await wasPreviouslyLoaded(tabId, frameId, loadCheck)) // Double-injection avoidance
+        ) {
+          return;
+        }
 
-				for (const file of js) {
-					void chrome.tabs.executeScript(tabId, {
-						...file,
-						matchAboutBlank,
-						allFrames,
-						runAt
-					});
-				}
-			};
+        // Mark as loaded first to avoid race conditions with multiple loads
+        chrome.tabs.executeScript(tabId, {
+          code: `${loadCheck} = true`,
+          runAt: "document_start",
+          frameId,
+        });
 
-			chrome.tabs.onUpdated.addListener(listener);
-			const registeredContentScript = {
-				async unregister() {
-					// @ts-expect-error It complains about a (unused) mismatching property in Tab
-					chromeP.tabs.onUpdated.removeListener(listener);
-				}
-			};
+        for (const file of css) {
+          chrome.tabs.insertCSS(tabId, {
+            ...file,
+            matchAboutBlank,
+            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
+            // manage each frame separately with the onDOMContentLoaded event
+            allFrames: false,
+            frameId,
+            runAt: runAt ?? "document_start", // CSS should prefer `document_start` when unspecified
+          });
+        }
 
-			if (typeof callback === 'function') {
-				callback(registeredContentScript);
-			}
+        for (const file of js) {
+          console.debug("registerPolyfill:executeScript", {
+            tabId,
+            frameId,
+            url,
+          });
 
-			return Promise.resolve(registeredContentScript);
-		}
-	};
+          chrome.tabs.executeScript(tabId, {
+            ...file,
+            matchAboutBlank,
+            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
+            // manage each frame separately with the onDOMContentLoaded event
+            allFrames: false,
+            frameId,
+            runAt,
+          });
+        }
+      };
+
+      // using onDOMContentLoaded because we run things at document_idle anyway. Would
+      // have to listen to a different event if we were using start
+      chrome.webNavigation.onDOMContentLoaded.addListener(listener);
+      const registeredContentScript = {
+        async unregister() {
+          chrome.webNavigation.onDOMContentLoaded.removeListener(listener);
+        },
+      };
+
+      if (typeof callback === "function") {
+        callback(registeredContentScript);
+      }
+
+
+      return Promise.resolve(registeredContentScript);
+    },
+  };
 }

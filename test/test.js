@@ -58,7 +58,7 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.static');
 	});
 
-	it.skip('should load dynamic content script after a reload', async () => {
+	it('should load dynamic content script after a reload', async () => {
 		await iframe.goto(iframe.url());
 		await expect(iframe).toMatchElement('.dynamic');
 	});
