@@ -28,8 +28,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"demo:watch": "parcel watch test/extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",
-		"demo:build": "parcel build test/extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
+		"demo:watch": "parcel watch test/demo-extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",
+		"demo:build": "parcel build test/demo-extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
 		"prepack": "tsc --sourceMap false",
 		"test": "xo && tsc --noEmit && jest",
 		"test:watch": "jest --watch",
