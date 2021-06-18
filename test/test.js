@@ -1,18 +1,21 @@
 /* globals page */
+
 import {describe, beforeAll, it} from '@jest/globals';
 import expect from 'expect-puppeteer';
 
-describe('regular page', () => {
+// TODO: Ensure that the elements are only injected once
+// TODO: Test CSS injection
+
+describe('tab', () => {
 	beforeAll(async () => {
 		await page.goto('https://iframe-test-page.vercel.app/');
 	});
 
-	it('should load parent page', async () => {
+	it('should load page', async () => {
 		await expect(page).toMatch('Parent page');
 	});
 
 	it('should load static content script', async () => {
-		// TODO: Only one!
 		await expect(page).toMatchElement('.static');
 	});
 
@@ -37,7 +40,6 @@ describe('iframe', () => {
 		await page.goto('https://iframe-test-page.vercel.app/');
 		const elementHandle = await page.waitForSelector('iframe');
 		iframe = await elementHandle.contentFrame();
-		// Await iframe.waitForNavigation();
 	});
 	it('should load iframe page', async () => {
 		await expect(iframe).toMatch('Framed page');
