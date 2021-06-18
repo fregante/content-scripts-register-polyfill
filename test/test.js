@@ -1,4 +1,6 @@
-require('expect-puppeteer');
+import {describe, beforeAll} from '@jest/globals';
+
+import expect from 'expect-puppeteer'
 
 describe('regular page', () => {
 	beforeAll(async () => {

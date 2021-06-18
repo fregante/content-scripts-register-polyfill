@@ -4,9 +4,7 @@ const extension = path.resolve(__dirname, 'test/dist');
 
 module.exports = {
 	launch: {
-		// // Debug only
-		// dumpio: true,
-		// headless: false,
+		headless: false,
 		product: 'chrome',
 		args: [
 			`--disable-extensions-except=${extension}`,
