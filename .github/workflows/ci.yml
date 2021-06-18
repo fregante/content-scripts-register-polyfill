@@ -9,13 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
+      - run: npm ci
       - run: npx xo
 
   Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
+      - run: npm ci
       - run: npm run build
       - run: npm run demo:build
+
+  Test:
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get install xvfb
+      - run: npm ci
+      - run: xvfb-run --auto-servernum npm run jest
