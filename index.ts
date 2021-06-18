@@ -1,128 +1,134 @@
-// Adapted from: https://github.com/fregante/content-scripts-register-polyfill/blob/master/index.ts
-// Changes: use onDOMContentLoaded instead of tabUpdated
+/// <reference path="./globals.d.ts" />
 
-import { patternToRegex } from "webext-patterns";
-import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
-
-// @ts-expect-error
-async function p<T>(fn, ...args): Promise<T> {
-  return new Promise((resolve, reject) => {
-    // @ts-expect-error
-    fn(...args, (result) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
+import chromeP from 'webext-polyfill-kinda';
+import {patternToRegex} from 'webext-patterns';
 
 async function isOriginPermitted(url: string): Promise<boolean> {
-  return p(chrome.permissions.contains, {
-    origins: [new URL(url).origin + "/*"],
-  });
+	return chromeP.permissions.contains({
+		origins: [new URL(url).origin + '/*']
+	});
 }
 
 async function wasPreviouslyLoaded(
-  tabId: number,
-  frameId: number,
-  loadCheck: string
+	tabId: number,
+	frameId: number | undefined,
+	args: Record<string, any>
 ): Promise<boolean> {
-  const result = await p<boolean[]>(chrome.tabs.executeScript, tabId, {
-    code: loadCheck,
-    frameId: frameId,
-    runAt: "document_start",
-  });
-  return result?.[0];
+	// Checks and sets a global variable
+	const loadCheck = (key: string): boolean => {
+		// @ts-expect-error "No index signature"
+		const wasLoaded = document[key] as boolean;
+
+		// @ts-expect-error "No index signature"
+		document[key] = true;
+		return wasLoaded;
+	};
+
+	// Safe code injection + argument passing
+	const result = await chromeP.tabs.executeScript(tabId, {
+		frameId,
+		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`
+	});
+
+	return result?.[0] as boolean;
 }
 
-if (typeof chrome === "object" && !chrome.contentScripts) {
-  chrome.contentScripts = {
-    // The callback is only used by webextension-polyfill
-    async register(contentScriptOptions, callback) {
-      const {
-        js = [],
-        css = [],
-        matchAboutBlank,
-        matches,
-        runAt,
-      } = contentScriptOptions;
-      // Injectable code; it sets a `true` property on `document` with the hash of the files as key.
-      const loadCheck = `document[${JSON.stringify(
-        JSON.stringify({ js, css })
-      )}]`;
+if (typeof chrome === 'object' && !chrome.contentScripts) {
+	chrome.contentScripts = {
+		// The callback is only used by webextension-polyfill
+		async register(contentScriptOptions, callback) {
+			const {
+				js = [],
+				css = [],
+				matchAboutBlank,
+				matches,
+				runAt
+			} = contentScriptOptions;
+			let {allFrames} = contentScriptOptions;
+			if ('webNavigation' in chrome) {
+				allFrames = false;
+			}
 
-      const matchesRegex = patternToRegex(...matches);
+			const matchesRegex = patternToRegex(...matches);
 
-      const listener = async ({
-        tabId,
-        frameId,
-        url,
-      }: OnDOMContentLoadedDetailsType): Promise<void> => {
-        if (
-          !url || // No URL = no permission;
-          !matchesRegex.test(url) || // Manual `matches` glob matching
-          !(await isOriginPermitted(url)) || // Permissions check
-          (await wasPreviouslyLoaded(tabId, frameId, loadCheck)) // Double-injection avoidance
-        ) {
-          return;
-        }
+			const inject = (tabId: number, frameId?: number) => {
+				for (const file of css) {
+					void chrome.tabs.insertCSS(tabId, {
+						...file,
+						matchAboutBlank,
+						allFrames,
+						frameId,
+						runAt: runAt ?? 'document_start' // CSS should prefer `document_start` when unspecified
+					});
+				}
 
-        // Mark as loaded first to avoid race conditions with multiple loads
-        chrome.tabs.executeScript(tabId, {
-          code: `${loadCheck} = true`,
-          runAt: "document_start",
-          frameId,
-        });
+				for (const file of js) {
+					void chrome.tabs.executeScript(tabId, {
+						...file,
+						matchAboutBlank,
+						allFrames,
+						frameId,
+						runAt
+					});
+				}
+			};
 
-        for (const file of css) {
-          chrome.tabs.insertCSS(tabId, {
-            ...file,
-            matchAboutBlank,
-            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
-            // manage each frame separately with the onDOMContentLoaded event
-            allFrames: false,
-            frameId,
-            runAt: runAt ?? "document_start", // CSS should prefer `document_start` when unspecified
-          });
-        }
+			const listener = async (
+				tabId: number,
+				{status}: chrome.tabs.TabChangeInfo,
+				{url}: chrome.tabs.Tab
+			): Promise<void> => {
+				if (
+					!status || // Only status updates are relevant
+					!url || // No URL = no permission
+					!matchesRegex.test(url) || // Manual `matches` glob matching
+					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
+					await wasPreviouslyLoaded(tabId, undefined, {js, css}) // Avoid double-injection
+				) {
+					return;
+				}
 
-        for (const file of js) {
-          console.debug("registerPolyfill:executeScript", {
-            tabId,
-            frameId,
-            url,
-          });
+				inject(tabId);
+			};
 
-          chrome.tabs.executeScript(tabId, {
-            ...file,
-            matchAboutBlank,
-            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
-            // manage each frame separately with the onDOMContentLoaded event
-            allFrames: false,
-            frameId,
-            runAt,
-          });
-        }
-      };
+			const navListener = async ({
+				tabId,
+				frameId,
+				url
+			}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
+				if (
+					!url || // No URL = no permission // TODO: check
+					!matchesRegex.test(url) || // Manual `matches` glob matching
+					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
+					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
+				) {
+					return;
+				}
 
-      // using onDOMContentLoaded because we run things at document_idle anyway. Would
-      // have to listen to a different event if we were using start
-      chrome.webNavigation.onDOMContentLoaded.addListener(listener);
-      const registeredContentScript = {
-        async unregister() {
-          chrome.webNavigation.onDOMContentLoaded.removeListener(listener);
-        },
-      };
+				inject(tabId, frameId);
+			};
 
-      if (typeof callback === "function") {
-        callback(registeredContentScript);
-      }
+			if ('webNavigation' in chrome) {
+				chrome.webNavigation.onCommitted.addListener(navListener);
+			} else {
+				chrome.tabs.onUpdated.addListener(listener);
+			}
 
+			const registeredContentScript = {
+				async unregister() {
+					if ('webNavigation' in chrome) {
+						chrome.webNavigation.onCommitted.removeListener(navListener);
+					} else {
+						chrome.tabs.onUpdated.removeListener(listener);
+					}
+				}
+			};
 
-      return Promise.resolve(registeredContentScript);
-    },
-  };
+			if (typeof callback === 'function') {
+				callback(registeredContentScript);
+			}
+
+			return registeredContentScript;
+		}
+	};
 }

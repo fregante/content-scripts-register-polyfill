@@ -65,7 +65,6 @@ describe('iframe', () => {
 });
 
 // // Uncomment to hold the browser open a little longer
-// // Also uncomment `launch.headless` in jest-puppeteer.config.js
 // jest.setTimeout(10000000);
 // describe('hold', () => {
 // 	it('should wait forever', async () => {
