@@ -24,13 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-    - name: Install Dependencies
-      uses: actions/setup-node@v1
-      env:
-        PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
-      with:
-        args: install
-    - name: Test Code
-      uses: mujo-code/puppeteer-headful@master
-      with:
-        args: npm run jest
+      - name: Install Dependencies
+        uses: actions/setup-node@v1
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        with:
+          args: install
+      - name: Test Code
+        uses: mujo-code/puppeteer-headful@master
+        with:
+          args: npm run jest
