@@ -24,9 +24,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Dependencies
-        uses: actions/setup-node@v1
+      - name: Install node
+        uses: actions/setup-node@v2-beta
         with:
-          args: install
-      - run: sudo apt-get install xvfb
-      - run: xvfb-run --auto-servernum npm run jest
+          node-version: 12.x
+      - name: Install stuff
+        run: npm install
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+      - name: Run headful puppeteer tests
+        uses: djp3/puppeteer-headful@master
+        with:
+          args: npm run jest
