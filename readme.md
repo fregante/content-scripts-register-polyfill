@@ -45,6 +45,16 @@ const registeredScript = await browser.contentScripts.register({
 });
 ```
 
+### Permissions
+
+To use this polyfill, normally you don't need any permissions other than the permission to inject code on the specified hosts. Include it and use it.
+
+However if you want to use `allFrames: true`, it's best to add the [`webNavigation` permission](https://developer.chrome.com/docs/extensions/reference/webNavigation/). Without it, `allFrames: true` will only work in limited situations:
+
+- the iframe is on the same domain as the top frame
+- the iframe is already on the page when `runAt` is configured to run (`runAt: 'start'` is unlikely to work)
+- the iframe doesn't navigate to another or reload
+
 ## Related
 
 - [webext-options-sync](https://github.com/fregante/webext-options-sync) - Helps you manage and autosave your extension's options.
