@@ -24,9 +24,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install xvfb
-      - run: export DISPLAY=':99.0'
-      - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-      - run: |
+      - name: Install dependencies
+        run: |
+          sudo apt-get install xvfb
+          # Ensure both a Chromium and a Firefox binary are available.
+          PUPPETEER_PRODUCT=firefox npm install
           npm install
-          npm run jest
+      - name: Run unit tests
+        uses: nick-invision/retry@v2
+        env:
+          CHROMIUM: true
+        with:
+          max_attempts: 3
+          command: xvfb-run --auto-servernum npm run jest
+          timeout_minutes: 10
