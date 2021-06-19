@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install
       - run: sudo apt-get install xvfb
-      - run: xvfb-run --auto-servernum npm run jest
+      - run: export DISPLAY=':99.0'
+      - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+      - run: |
+          npm install
+          npm run jest
