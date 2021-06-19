@@ -22,7 +22,9 @@ jobs:
 
   Test:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
+      - run: sudo apt-get install xvfb
       - run: npm ci
-      - run: npm run jest
+      - run: xvfb-run --auto-servernum npm run jest
