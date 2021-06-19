@@ -48,6 +48,8 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			let {allFrames} = contentScriptOptions;
 			if (gotNavigation) {
 				allFrames = false;
+			} else if (allFrames) {
+				console.warn('`allFrames: true` works best with the `webNavigation` permission: https://github.com/fregante/content-scripts-register-polyfill/issues/10')
 			}
 
 			const matchesRegex = patternToRegex(...matches);
