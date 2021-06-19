@@ -25,4 +25,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: npm ci
-      - run: npm run jest
+      - run: sudo apt-get install xvfb
+      - run: xvfb-run --auto-servernum npm run jest
