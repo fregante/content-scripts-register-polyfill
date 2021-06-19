@@ -24,8 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci
-      - name: Run headless test
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run jest
+      - run: npm install
+      - run: sudo apt-get install xvfb
+      - run: xvfb-run --auto-servernum npm run jest
