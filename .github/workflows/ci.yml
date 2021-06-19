@@ -24,9 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Dependencies
-        uses: actions/setup-node@v1
-        with:
-          args: install
+      - run: npm install
       - run: sudo apt-get install xvfb
       - run: xvfb-run --auto-servernum npm run jest
