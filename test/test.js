@@ -1,7 +1,7 @@
 /* globals page */
 
-import {describe, beforeAll, it} from '@jest/globals';
-import expect from 'expect-puppeteer';
+const {describe, beforeAll, it} = require( '@jest/globals');
+const expect = require( 'expect-puppeteer');
 
 // TODO: Ensure that the elements are only injected once
 // TODO: Test CSS injection

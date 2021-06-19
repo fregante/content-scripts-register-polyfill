@@ -17,7 +17,6 @@
 	"repository": "fregante/content-scripts-register-polyfill",
 	"license": "MIT",
 	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
-	"type": "module",
 	"main": "index.js",
 	"files": [
 		"index.js",
@@ -33,7 +32,7 @@
 		"demo:build": "parcel build test/demo-extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
 		"prepack": "tsc --sourceMap false",
 		"test": "xo && tsc --noEmit && npm run jest",
-		"jest": "NODE_OPTIONS=--experimental-vm-modules JEST_PUPPETEER_CONFIG=jest-puppeteer.config.cjs jest",
+		"jest": "JEST_PUPPETEER_CONFIG=jest-puppeteer.config.cjs jest",
 		"test:watch": "npm run jest -- --watch",
 		"watch": "tsc --watch"
 	},
