@@ -49,7 +49,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			if (gotNavigation) {
 				allFrames = false;
 			} else if (allFrames) {
-				console.warn('`allFrames: true` works best with the `webNavigation` permission: https://github.com/fregante/content-scripts-register-polyfill#permissions');
+				console.warn('`allFrames: true` requires the `webNavigation` permission to work correctly: https://github.com/fregante/content-scripts-register-polyfill#permissions');
 			}
 
 			const matchesRegex = patternToRegex(...matches);
