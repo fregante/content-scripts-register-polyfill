@@ -54,18 +54,6 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 
 			const matchesRegex = patternToRegex(...matches);
 
-			const injectOnExistingTabs = async () => {
-				const tabs = await chromeP.tabs.query({
-					url: matches
-				});
-
-				for (const tab of tabs) {
-					if (tab.id) {
-						void injectIfNotPreviouslyLoaded(tab.id);
-					}
-				}
-			};
-
 			const injectIfPermanentlyPermitted = async (url: string, tabId: number, frameId?: number) => {
 				if (
 					!matchesRegex.test(url) || // Manual `matches` glob matching
@@ -139,7 +127,16 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				callback(registeredContentScript);
 			}
 
-			void injectOnExistingTabs();
+			// Inject on existing tabs, asynchronously
+			chrome.tabs.query({
+				url: matches
+			}, tabs => {
+				for (const tab of tabs) {
+					if (tab.id) {
+						void injectIfNotPreviouslyLoaded(tab.id);
+					}
+				}
+			});
 
 			return registeredContentScript;
 		}
