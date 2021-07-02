@@ -54,12 +54,31 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 
 			const matchesRegex = patternToRegex(...matches);
 
-			const inject = async (url: string, tabId: number, frameId?: number) => {
+			const injectOnExistingTabs = async () => {
+				const tabs = await chromeP.tabs.query({
+					url: matches
+				});
+
+				for (const tab of tabs) {
+					if (tab.id) {
+						void injectIfNotPreviouslyLoaded(tab.id);
+					}
+				}
+			};
+
+			const injectIfPermanentlyPermitted = async (url: string, tabId: number, frameId?: number) => {
 				if (
 					!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
+					!await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
 				) {
+					return;
+				}
+
+				await injectIfNotPreviouslyLoaded(tabId, frameId);
+			};
+
+			const injectIfNotPreviouslyLoaded = async (tabId: number, frameId?: number) => {
+				if (await wasPreviouslyLoaded(tabId, frameId, {js, css})) {
 					return;
 				}
 
@@ -92,12 +111,12 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				// Only status updates are relevant
 				// No URL = no permission
 				if (status && url) {
-					void inject(url, tabId);
+					void injectIfPermanentlyPermitted(url, tabId);
 				}
 			};
 
 			const navListener = async ({tabId, frameId, url}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
-				void inject(url, tabId, frameId);
+				void injectIfPermanentlyPermitted(url, tabId, frameId);
 			};
 
 			if (gotNavigation) {
@@ -119,6 +138,8 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 			if (typeof callback === 'function') {
 				callback(registeredContentScript);
 			}
+
+			void injectOnExistingTabs();
 
 			return registeredContentScript;
 		}
