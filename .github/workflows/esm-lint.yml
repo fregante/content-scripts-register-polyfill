@@ -68,6 +68,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
       - run: npm install ./artifact
+      - run: npm install -D @types/firefox-webext-browser
       - run: echo "${{ env.IMPORT_TEXT }} '${{ env.NPM_MODULE_NAME }}'" > index.ts
       - run: tsc index.ts
       - run: cat index.js
