@@ -10,6 +10,8 @@ logs
 *.map
 index.js
 index.d.ts
+ponyfill.js
+ponyfill.d.ts
 test/demo-extension/content-scripts-register-polyfill.js
 .parcel-cache
 dist
