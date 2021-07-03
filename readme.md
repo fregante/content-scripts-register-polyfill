@@ -62,6 +62,20 @@ const registeredScript = await registerContentScript({
 });
 ```
 
+### TypeScript
+
+Starting in v3, the types are no longer included. You have a few options:
+
+- if you're using [webextension-polyfill-ts](https://github.com/Lusito/webextension-polyfill-ts) it will automatically work
+- if you're using [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) and the `browser.*` API, install its types
+  ```sh
+  npm install -D @types/firefox-webext-browser
+  ```
+- if you want to use it as `chrome.contentScripts.register()` or as a [ponyfill](#ponyfill), you might need to install two type packages:
+  ```sh
+  npm install -D @types/firefox-webext-browser @types/chrome
+  ```
+
 ## Permission
 
 Generally you don't need any permissions other than the host permission you want to register a script on.
