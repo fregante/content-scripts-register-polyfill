@@ -49,11 +49,13 @@ const registeredScript = await browser.contentScripts.register({
 
 Generally you don't need any permissions other than the host permission you want to register a script on.
 
-However to use `allFrames: true` you should the [`webNavigation` permission](https://developer.chrome.com/docs/extensions/reference/webNavigation/). Without it, `allFrames: true` will work "with bugs." It won't work:
+However, in order to use `allFrames: true` you should the add [`webNavigation` permission](https://developer.chrome.com/docs/extensions/reference/webNavigation/). Without it, `allFrames: true` won’t work:
 
 - when the iframe is not on the same domain as the top frame
 - when the iframe reloads or navigates to another page
 - when the iframe is not ready when `runAt` is configured to run (`runAt: 'start'` is unlikely to work)
+
+If available, the `webNavigation` API will be automatically used in every situation for better performance.
 
 ## Related
 
