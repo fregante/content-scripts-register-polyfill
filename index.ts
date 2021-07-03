@@ -11,6 +11,7 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 
 async function wasPreviouslyLoaded(
 	tabId: number,
+	frameId: number | undefined,
 	args: Record<string, any>
 ): Promise<boolean> {
 	// Checks and sets a global variable
@@ -25,6 +26,7 @@ async function wasPreviouslyLoaded(
 
 	// Safe code injection + argument passing
 	const result = await chromeP.tabs.executeScript(tabId, {
+		frameId,
 		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`
 	});
 
@@ -32,30 +34,31 @@ async function wasPreviouslyLoaded(
 }
 
 if (typeof chrome === 'object' && !chrome.contentScripts) {
+	const gotNavigation = 'webNavigation' in chrome;
 	chrome.contentScripts = {
 		// The callback is only used by webextension-polyfill
 		async register(contentScriptOptions, callback) {
 			const {
 				js = [],
 				css = [],
-				allFrames,
 				matchAboutBlank,
 				matches,
 				runAt
 			} = contentScriptOptions;
+			let {allFrames} = contentScriptOptions;
+			if (gotNavigation) {
+				allFrames = false;
+			} else if (allFrames) {
+				console.warn('`allFrames: true` requires the `webNavigation` permission to work correctly: https://github.com/fregante/content-scripts-register-polyfill#permissions');
+			}
+
 			const matchesRegex = patternToRegex(...matches);
 
-			const listener = async (
-				tabId: number,
-				{status}: chrome.tabs.TabChangeInfo,
-				{url}: chrome.tabs.Tab
-			): Promise<void> => {
+			const inject = async (url: string, tabId: number, frameId?: number) => {
 				if (
-					!status || // Only status updates are relevant
-					!url || // No URL = no permission
 					!matchesRegex.test(url) || // Manual `matches` glob matching
 					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, {js, css}) // Avoid double-injection
+					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
 				) {
 					return;
 				}
@@ -65,6 +68,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 						...file,
 						matchAboutBlank,
 						allFrames,
+						frameId,
 						runAt: runAt ?? 'document_start' // CSS should prefer `document_start` when unspecified
 					});
 				}
@@ -74,16 +78,41 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 						...file,
 						matchAboutBlank,
 						allFrames,
+						frameId,
 						runAt
 					});
 				}
 			};
 
-			chrome.tabs.onUpdated.addListener(listener);
+			const tabListener = async (
+				tabId: number,
+				{status}: chrome.tabs.TabChangeInfo,
+				{url}: chrome.tabs.Tab
+			): Promise<void> => {
+				// Only status updates are relevant
+				// No URL = no permission
+				if (status && url) {
+					void inject(url, tabId);
+				}
+			};
+
+			const navListener = async ({tabId, frameId, url}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
+				void inject(url, tabId, frameId);
+			};
+
+			if (gotNavigation) {
+				chrome.webNavigation.onCommitted.addListener(navListener);
+			} else {
+				chrome.tabs.onUpdated.addListener(tabListener);
+			}
+
 			const registeredContentScript = {
 				async unregister() {
-					// @ts-expect-error It complains about a (unused) mismatching property in Tab
-					chromeP.tabs.onUpdated.removeListener(listener);
+					if (gotNavigation) {
+						chrome.webNavigation.onCommitted.removeListener(navListener);
+					} else {
+						chrome.tabs.onUpdated.removeListener(tabListener);
+					}
 				}
 			};
 
@@ -91,7 +120,7 @@ if (typeof chrome === 'object' && !chrome.contentScripts) {
 				callback(registeredContentScript);
 			}
 
-			return Promise.resolve(registeredContentScript);
+			return registeredContentScript;
 		}
 	};
 }

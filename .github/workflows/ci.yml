@@ -22,7 +22,6 @@ jobs:
 
   Test:
     runs-on: ubuntu-latest
-    if: false
     steps:
       - uses: actions/checkout@v2
       - run: sudo apt-get install xvfb

@@ -33,6 +33,7 @@
 		"demo:build": "parcel build test/demo-extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
 		"prepack": "tsc --sourceMap false",
 		"test": "xo && tsc --noEmit && npm run jest",
+		"prejest": "npm run demo:build",
 		"jest": "NODE_OPTIONS=--experimental-vm-modules JEST_PUPPETEER_CONFIG=jest-puppeteer.config.cjs jest",
 		"test:watch": "npm run jest -- --watch",
 		"watch": "tsc --watch"
