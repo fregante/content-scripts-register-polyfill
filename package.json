@@ -6,15 +6,20 @@
 		"browser",
 		"content scripts",
 		"contentScripts",
-		"css",
+		"programmatic injection",
+		"executescript",
+		"RequestContentScript",
 		"declarative",
 		"declarativecontent",
 		"extension",
+		"firefox",
+		"css",
 		"scripts",
 		"web-ext",
 		"webext"
 	],
 	"repository": "fregante/content-scripts-register-polyfill",
+	"funding": "https://github.com/sponsors/fregante",
 	"license": "MIT",
 	"author": "Federico Brigante <me@fregante.com> (https://fregante.com)",
 	"type": "module",
@@ -26,9 +31,6 @@
 		"ponyfill.d.ts",
 		"globals.d.ts"
 	],
-	"targets": {
-		"main": false
-	},
 	"scripts": {
 		"build": "tsc",
 		"demo:watch": "parcel watch test/demo-extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",
@@ -54,21 +56,31 @@
 			"node/file-extension-in-import": "off"
 		}
 	},
+	"jest": {
+		"injectGlobals": false,
+		"preset": "jest-puppeteer",
+		"testMatch": [
+			"**/test/*.js"
+		]
+	},
 	"dependencies": {
 		"webext-patterns": "^1.1.0",
-		"webext-polyfill-kinda": "0.0.2"
+		"webext-polyfill-kinda": "0.1.0"
 	},
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.0.0-nightly.2312",
 		"@sindresorhus/tsconfig": "^1.0.2",
 		"@types/chrome": "0.0.145",
 		"@types/firefox-webext-browser": "^82.0.0",
-		"jest": "^27.0.4",
+		"jest": "^27.0.6",
 		"jest-puppeteer": "^5.0.4",
 		"parcel": "^2.0.0-nightly.688",
-		"puppeteer": "^9.1.1",
-		"typescript": "^4.3.4",
-		"xo": "^0.40.2"
+		"puppeteer": "^10.1.0",
+		"typescript": "^4.3.5",
+		"xo": "^0.40.3"
+	},
+	"targets": {
+		"main": false
 	},
 	"webExt": {
 		"sourceDir": "test/dist",
@@ -78,12 +90,5 @@
 				"https://iframe-test-page.vercel.app/cross-origin-parent.html"
 			]
 		}
-	},
-	"jest": {
-		"preset": "jest-puppeteer",
-		"injectGlobals": false,
-		"testMatch": [
-			"**/test/*.js"
-		]
 	}
 }
