@@ -22,6 +22,8 @@
 	"files": [
 		"index.js",
 		"index.d.ts",
+		"ponyfill.js",
+		"ponyfill.d.ts",
 		"globals.d.ts"
 	],
 	"targets": {

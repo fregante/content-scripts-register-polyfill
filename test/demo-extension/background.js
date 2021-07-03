@@ -1,11 +1,14 @@
-import '../../index.ts'; // `content-scripts-register-polyfill`
+import contentScriptsRegister from '../../ponyfill';
 
 console.log('Background loaded');
 
-/** @type {typeof browser} */
-const {contentScripts} = window.browser ?? chrome;
+if (window.browser?.contentScripts.register) {
+	console.log('Using native implementation');
+} else {
+	console.log('Using polyfill');
+}
 
-contentScripts.register({
+(window.browser?.contentScripts.register ?? contentScriptsRegister)({
 	allFrames: true,
 	matches: ['https://iframe-test-page.vercel.app/*'],
 	js: [{file: 'dynamic.js'}],

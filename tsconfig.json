@@ -5,6 +5,7 @@
 		"module": "es2015"
 	},
 	"files": [
+		"ponyfill.ts",
 		"index.ts"
 	]
 }

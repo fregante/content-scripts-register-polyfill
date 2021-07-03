@@ -65,9 +65,10 @@ describe('iframe', () => {
 });
 
 // // Uncomment to hold the browser open a little longer
+// import {jest} from '@jest/globals';
 // jest.setTimeout(10000000);
 // describe('hold', () => {
 // 	it('should wait forever', async () => {
-// 		await new Promise(resolve => setTimeout(resolve, 10000))
+// 		await new Promise(resolve => setTimeout(resolve, 1000000))
 // 	})
 // });
