@@ -45,7 +45,24 @@ const registeredScript = await browser.contentScripts.register({
 });
 ```
 
-### Permissions
+### Usage as ponyfill
+
+This package also exports a [ponyfill](https://ponyfill.com/), meaning you can also use it as a normal API isntead of treating it as a polyfill. This way it will always use the current code and never rely on Firefox’ native implementation.
+
+```js
+import registerContentScript from 'content-scripts-register-polyfill/ponyfill.js';
+
+const registeredScript = await registerContentScript({
+	js: [{
+		file: 'myfile.js'
+	}],
+	matches: [
+		'https://google.com/*'
+	]
+});
+```
+
+## Permission
 
 Generally you don't need any permissions other than the host permission you want to register a script on.
 

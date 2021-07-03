@@ -37,7 +37,7 @@ async function wasPreviouslyLoaded(
 }
 
 // The callback is only used by webextension-polyfill
-export default async function contentScriptsRegister(
+export default async function registerContentScript(
 	contentScriptOptions: CS.RegisteredContentScriptOptions,
 	callback?: (contentScript: CS.RegisteredContentScript) => void
 ): Promise<CS.RegisteredContentScript> {
