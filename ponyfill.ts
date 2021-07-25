@@ -57,6 +57,12 @@ export default async function registerContentScript(
 
 	const matchesRegex = patternToRegex(...matches);
 
+	const asyncExecuteScript = async (tabId: number, details: chrome.tabs.InjectDetails) => {
+		return new Promise(resolve => {
+			chrome.tabs.executeScript(tabId, details, resolve);
+		});
+	};
+
 	const inject = async (url: string, tabId: number, frameId?: number) => {
 		if (
 			!matchesRegex.test(url) || // Manual `matches` glob matching
@@ -77,7 +83,8 @@ export default async function registerContentScript(
 		}
 
 		for (const file of js) {
-			void chrome.tabs.executeScript(tabId, {
+			// eslint-disable-next-line no-await-in-loop
+			await asyncExecuteScript(tabId, {
 				...file,
 				matchAboutBlank,
 				allFrames,

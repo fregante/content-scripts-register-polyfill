@@ -11,7 +11,10 @@ if (window.browser?.contentScripts.register) {
 (window.browser?.contentScripts.register ?? contentScriptsRegister)({
 	allFrames: true,
 	matches: ['https://iframe-test-page.vercel.app/*'],
-	js: [{file: 'dynamic.js'}],
+	js: [
+		{file: 'dynamic.js'},
+		{code: 'document.body.insertAdjacentHTML(\'beforeEnd\', \'<p class="dynamic-code">This should be second</p>\');'}
+	],
 	css: [{file: 'dynamic.css'}]
 });
 
