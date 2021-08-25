@@ -19,8 +19,16 @@ describe('tab', () => {
 		await expect(page).toMatchElement('.static');
 	});
 
-	it('should load dynamic content script', async () => {
+	it('should load file based dynamic content script', async () => {
 		await expect(page).toMatchElement('.dynamic');
+	});
+
+	it('should load code based dynamic content script', async () => {
+		await expect(page).toMatchElement('.dynamic-code');
+	});
+
+	it('should execute dynamic content scripts in the right order', async () => {
+		await expect(page).toMatchElement('.dynamic + .dynamic-code');
 	});
 
 	it('should load static content script after a reload', async () => {
@@ -28,9 +36,14 @@ describe('tab', () => {
 		await expect(page).toMatchElement('.static');
 	});
 
-	it('should load dynamic content script after a reload', async () => {
+	it('should load file based dynamic content script after a reload', async () => {
 		await page.reload();
 		await expect(page).toMatchElement('.dynamic');
+	});
+
+	it('should load code based dynamic content script after a reload', async () => {
+		await page.reload();
+		await expect(page).toMatchElement('.dynamic-code');
 	});
 });
 
@@ -49,8 +62,16 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.static');
 	});
 
-	it('should load dynamic content script', async () => {
+	it('should load file based dynamic content script', async () => {
 		await expect(iframe).toMatchElement('.dynamic');
+	});
+
+	it('should load code based dynamic content script', async () => {
+		await expect(iframe).toMatchElement('.dynamic-code');
+	});
+
+	it('should execute dynamic content scripts in the right order', async () => {
+		await expect(page).toMatchElement('.dynamic + .dynamic-code');
 	});
 
 	it('should load static content script after a reload', async () => {
@@ -58,9 +79,14 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.static');
 	});
 
-	it('should load dynamic content script after a reload', async () => {
+	it('should load file based dynamic content script after a reload', async () => {
 		await iframe.goto(iframe.url());
 		await expect(iframe).toMatchElement('.dynamic');
+	});
+
+	it('should load code based dynamic content script after a reload', async () => {
+		await iframe.goto(iframe.url());
+		await expect(iframe).toMatchElement('.dynamic-code');
 	});
 });
 
