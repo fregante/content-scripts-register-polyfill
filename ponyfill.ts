@@ -76,14 +76,15 @@ export default async function registerContentScript(
 			});
 		}
 
-		let lastInjectionPromise: Promise<unknown> | undefined;
+		let lastInjection: Promise<unknown> | undefined;
 		for (const file of js) {
+			// Files are executed in order, but code isn’t, so it must wait the last script #31
 			if ('code' in file) {
-				// eslint-disable-next-line no-await-in-loop
-				await lastInjectionPromise;
+				// eslint-disable-next-line no-await-in-loop -- On purpose, to serialize injection
+				await lastInjection;
 			}
 
-			lastInjectionPromise = chromeP.tabs.executeScript(tabId, {
+			lastInjection = chromeP.tabs.executeScript(tabId, {
 				...file,
 				matchAboutBlank,
 				allFrames,
