@@ -8,14 +8,14 @@ const gotNavigation = typeof chrome === 'object' && 'webNavigation' in chrome;
 
 async function isOriginPermitted(url: string): Promise<boolean> {
 	return chromeP.permissions.contains({
-		origins: [new URL(url).origin + '/*']
+		origins: [new URL(url).origin + '/*'],
 	});
 }
 
 async function wasPreviouslyLoaded(
 	tabId: number,
 	frameId: number | undefined,
-	args: Record<string, any>
+	args: Record<string, any>,
 ): Promise<boolean> {
 	// Checks and sets a global variable
 	const loadCheck = (key: string): boolean => {
@@ -30,7 +30,7 @@ async function wasPreviouslyLoaded(
 	// Safe code injection + argument passing
 	const result = await chromeP.tabs.executeScript(tabId, {
 		frameId,
-		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`
+		code: `(${loadCheck.toString()})(${JSON.stringify(args)})`,
 	});
 
 	return result?.[0] as boolean;
@@ -39,14 +39,14 @@ async function wasPreviouslyLoaded(
 // The callback is only used by webextension-polyfill
 export default async function registerContentScript(
 	contentScriptOptions: CS.RegisteredContentScriptOptions,
-	callback?: (contentScript: CS.RegisteredContentScript) => void
+	callback?: (contentScript: CS.RegisteredContentScript) => void,
 ): Promise<CS.RegisteredContentScript> {
 	const {
 		js = [],
 		css = [],
 		matchAboutBlank,
 		matches,
-		runAt
+		runAt,
 	} = contentScriptOptions;
 	let {allFrames} = contentScriptOptions;
 	if (gotNavigation) {
@@ -59,9 +59,9 @@ export default async function registerContentScript(
 
 	const inject = async (url: string, tabId: number, frameId?: number) => {
 		if (
-			!matchesRegex.test(url) || // Manual `matches` glob matching
-					!await isOriginPermitted(url) || // Without this, we might have temporary access via accessTab
-					await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
+			!matchesRegex.test(url) // Manual `matches` glob matching
+					|| !await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
+					|| await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
 		) {
 			return;
 		}
@@ -72,7 +72,7 @@ export default async function registerContentScript(
 				matchAboutBlank,
 				allFrames,
 				frameId,
-				runAt: runAt ?? 'document_start' // CSS should prefer `document_start` when unspecified
+				runAt: runAt ?? 'document_start', // CSS should prefer `document_start` when unspecified
 			});
 		}
 
@@ -89,7 +89,7 @@ export default async function registerContentScript(
 				matchAboutBlank,
 				allFrames,
 				frameId,
-				runAt
+				runAt,
 			});
 		}
 	};
@@ -97,7 +97,7 @@ export default async function registerContentScript(
 	const tabListener = async (
 		tabId: number,
 		{status}: chrome.tabs.TabChangeInfo,
-		{url}: chrome.tabs.Tab
+		{url}: chrome.tabs.Tab,
 	): Promise<void> => {
 		// Only status updates are relevant
 		// No URL = no permission
@@ -123,7 +123,7 @@ export default async function registerContentScript(
 			} else {
 				chrome.tabs.onUpdated.removeListener(tabListener);
 			}
-		}
+		},
 	};
 
 	if (typeof callback === 'function') {

@@ -13,9 +13,9 @@ if (window.browser?.contentScripts.register) {
 	matches: ['https://iframe-test-page.vercel.app/*'],
 	js: [
 		{file: 'dynamic.js'},
-		{code: 'document.body.insertAdjacentHTML(\'beforeEnd\', \'<p class="dynamic-code">This should be second</p>\');'}
+		{code: 'document.body.insertAdjacentHTML(\'beforeEnd\', \'<p class="dynamic-code">This should be second</p>\');'},
 	],
-	css: [{file: 'dynamic.css'}]
+	css: [{file: 'dynamic.css'}],
 });
 
 console.log('Script registered');
