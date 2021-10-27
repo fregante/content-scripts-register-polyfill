@@ -3,6 +3,17 @@
 import {describe, beforeAll, it} from '@jest/globals';
 import expect from 'expect-puppeteer';
 
+async function expectToNotMatchElement(window, selector) {
+	try {
+		await expect(window).toMatchElement(selector);
+		throw new Error(`Expected ${selector} element found`);
+	} catch (error) {
+		if (!error.message.startsWith(`Element ${selector} not found`)) {
+			throw error.message;
+		}
+	}
+}
+
 // TODO: Ensure that the elements are only injected once
 // TODO: Test CSS injection
 
@@ -19,11 +30,11 @@ describe('tab', () => {
 		await expect(page).toMatchElement('.static');
 	});
 
-	it('should load file based dynamic content script', async () => {
+	it('should load file-based dynamic content script', async () => {
 		await expect(page).toMatchElement('.dynamic');
 	});
 
-	it('should load code based dynamic content script', async () => {
+	it('should load code-based dynamic content script', async () => {
 		await expect(page).toMatchElement('.dynamic-code');
 	});
 
@@ -36,12 +47,12 @@ describe('tab', () => {
 		await expect(page).toMatchElement('.static');
 	});
 
-	it('should load file based dynamic content script after a reload', async () => {
+	it('should load file-based dynamic content script after a reload', async () => {
 		await page.reload();
 		await expect(page).toMatchElement('.dynamic');
 	});
 
-	it('should load code based dynamic content script after a reload', async () => {
+	it('should load code-based dynamic content script after a reload', async () => {
 		await page.reload();
 		await expect(page).toMatchElement('.dynamic-code');
 	});
@@ -62,11 +73,11 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.static');
 	});
 
-	it('should load file based dynamic content script', async () => {
+	it('should load file-based dynamic content script', async () => {
 		await expect(iframe).toMatchElement('.dynamic');
 	});
 
-	it('should load code based dynamic content script', async () => {
+	it('should load code-based dynamic content script', async () => {
 		await expect(iframe).toMatchElement('.dynamic-code');
 	});
 
@@ -79,18 +90,47 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.static');
 	});
 
-	it('should load file based dynamic content script after a reload', async () => {
+	it('should load file-based dynamic content script after a reload', async () => {
 		await iframe.goto(iframe.url());
 		await expect(iframe).toMatchElement('.dynamic');
 	});
 
-	it('should load code based dynamic content script after a reload', async () => {
+	it('should load code-based dynamic content script after a reload', async () => {
 		await iframe.goto(iframe.url());
 		await expect(iframe).toMatchElement('.dynamic-code');
 	});
 });
 
-// // Uncomment to hold the browser open a little longer
+let iframeOfExcludedParent;
+describe('excludeMatches', () => {
+	beforeAll(async () => {
+		await page.goto('https://fregante.github.io/pixiebrix-testing-ground/Parent-page?iframe=./Framed-page');
+		const elementHandle = await page.waitForSelector('iframe');
+		iframeOfExcludedParent = await elementHandle.contentFrame();
+	});
+
+	it('should load page and iframe', async () => {
+		await expect(page).toMatchElement('title', {text: 'Parent page'});
+		await expect(iframeOfExcludedParent).toMatchElement('title', {text: 'Framed page'});
+	});
+
+	it('should load static content script only in iframe', async () => {
+		await expectToNotMatchElement(page, '.static');
+		await expect(iframeOfExcludedParent).toMatchElement('.static');
+	});
+
+	it('should load file-based dynamic content script only in iframe', async () => {
+		await expectToNotMatchElement(page, '.dynamic');
+		await expect(iframeOfExcludedParent).toMatchElement('.dynamic');
+	});
+
+	it('should load code-based dynamic content script', async () => {
+		await expectToNotMatchElement(page, '.dynamic-code');
+		await expect(iframeOfExcludedParent).toMatchElement('.dynamic-code');
+	});
+});
+
+// Uncomment to hold the browser open a little longer
 // import {jest} from '@jest/globals';
 // jest.setTimeout(10000000);
 // describe('hold', () => {

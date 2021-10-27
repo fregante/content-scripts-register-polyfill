@@ -58,6 +58,9 @@ const registeredScript = await registerContentScript({
 	}],
 	matches: [
 		'https://google.com/*'
+	],
+	excludeMatches: [ // Also supported
+		'https://google.com/search*'
 	]
 });
 ```
