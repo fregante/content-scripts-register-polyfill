@@ -18,4 +18,15 @@ if (window.browser?.contentScripts.register) {
 	css: [{file: 'dynamic.css'}],
 });
 
+(window.browser?.contentScripts.register ?? contentScriptsRegister)({
+	allFrames: true,
+	matches: ['https://fregante.github.io/pixiebrix-testing-ground/*'],
+	excludeMatches: ['https://fregante.github.io/pixiebrix-testing-ground/Parent-page*'],
+	js: [
+		{file: 'dynamic.js'},
+		{code: 'document.body.insertAdjacentHTML(\'beforeEnd\', \'<p class="dynamic-code">This should be second</p>\');'},
+	],
+	css: [{file: 'dynamic.css'}],
+});
+
 console.log('Script registered');

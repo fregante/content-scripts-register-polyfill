@@ -46,6 +46,7 @@ export default async function registerContentScript(
 		css = [],
 		matchAboutBlank,
 		matches,
+		excludeMatches,
 		runAt,
 	} = contentScriptOptions;
 	let {allFrames} = contentScriptOptions;
@@ -56,12 +57,14 @@ export default async function registerContentScript(
 	}
 
 	const matchesRegex = patternToRegex(...matches);
+	const excludeMatchesRegex = patternToRegex(...excludeMatches ?? []);
 
 	const inject = async (url: string, tabId: number, frameId?: number) => {
 		if (
 			!matchesRegex.test(url) // Manual `matches` glob matching
-					|| !await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
-					|| await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
+			|| excludeMatchesRegex.test(url) // Manual `matches` glob matching
+			|| !await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
+			|| await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
 		) {
 			return;
 		}
@@ -106,7 +109,11 @@ export default async function registerContentScript(
 		}
 	};
 
-	const navListener = async ({tabId, frameId, url}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
+	const navListener = async ({
+		tabId,
+		frameId,
+		url,
+	}: chrome.webNavigation.WebNavigationTransitionCallbackDetails): Promise<void> => {
 		void inject(url, tabId, frameId);
 	};
 
