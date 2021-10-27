@@ -33,8 +33,8 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"demo:watch": "parcel watch test/demo-extension/* --dist-dir test/dist --no-cache --no-hmr --detailed-report 0",
-		"demo:build": "parcel build test/demo-extension/* --dist-dir test/dist --no-cache --detailed-report 0 --no-optimize",
+		"demo:watch": "parcel watch test/demo-extension/* --no-cache --no-hmr",
+		"demo:build": "parcel build test/demo-extension/* --no-cache",
 		"prepack": "tsc --sourceMap false",
 		"test": "xo && tsc --noEmit && npm run jest",
 		"prejest": "npm run demo:build",
@@ -65,22 +65,29 @@
 	},
 	"dependencies": {
 		"webext-patterns": "^1.1.1",
-		"webext-polyfill-kinda": "^0.1.1"
+		"webext-polyfill-kinda": "^0.9.0"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.0.0-nightly.2312",
+		"@parcel/config-webextension": "^2.0.0",
 		"@sindresorhus/tsconfig": "^2.0.0",
-		"@types/chrome": "^0.0.154",
-		"@types/firefox-webext-browser": "^82.0.1",
-		"jest": "^27.0.6",
-		"jest-puppeteer": "^5.0.4",
-		"parcel": "^2.0.0-nightly.688",
-		"puppeteer": "^10.1.0",
-		"typescript": "^4.4.2",
-		"xo": "^0.44.0"
+		"@types/chrome": "^0.0.161",
+		"@types/firefox-webext-browser": "^94.0.0",
+		"jest": "^27.3.1",
+		"jest-puppeteer": "^6.0.0",
+		"parcel": "^2.0.0",
+		"puppeteer": "^10.4.0",
+		"typescript": "^4.4.4",
+		"xo": "^0.45.0"
 	},
 	"targets": {
-		"main": false
+		"main": false,
+		"default": {
+			"distDir": "./test/dist",
+			"sourceMap": {
+				"inline": true
+			},
+			"optimize": false
+		}
 	},
 	"webExt": {
 		"sourceDir": "test/dist",
