@@ -62,7 +62,7 @@ export default async function registerContentScript(
 	const inject = async (url: string, tabId: number, frameId?: number) => {
 		if (
 			!matchesRegex.test(url) // Manual `matches` glob matching
-			|| excludeMatchesRegex.test(url) // Manual `matches` glob matching
+			|| excludeMatchesRegex.test(url) // Manual `exclude_matches` glob matching
 			|| !await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
 			|| await wasPreviouslyLoaded(tabId, frameId, {js, css}) // Avoid double-injection
 		) {
