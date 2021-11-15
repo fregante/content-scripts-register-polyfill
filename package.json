@@ -72,11 +72,11 @@
 		"@sindresorhus/tsconfig": "^2.0.0",
 		"@types/chrome": "^0.0.163",
 		"@types/firefox-webext-browser": "^94.0.0",
-		"jest": "^27.0.6",
+		"jest": "^27.3.1",
 		"jest-puppeteer": "^6.0.0",
 		"parcel": "^2.0.1",
 		"puppeteer": "^11.0.0",
-		"typescript": "^4.4.2",
+		"typescript": "^4.4.4",
 		"xo": "^0.46.4"
 	},
 	"targets": {
