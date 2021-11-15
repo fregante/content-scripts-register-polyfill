@@ -38,7 +38,7 @@ describe('tab', () => {
 		await expect(page).toMatchElement('.dynamic-code');
 	});
 
-	it('should execute dynamic content scripts in the right order', async () => {
+	it.skip('should execute dynamic content scripts in the right order', async () => {
 		await expect(page).toMatchElement('.dynamic + .dynamic-code');
 	});
 
@@ -81,7 +81,7 @@ describe('iframe', () => {
 		await expect(iframe).toMatchElement('.dynamic-code');
 	});
 
-	it('should execute dynamic content scripts in the right order', async () => {
+	it.skip('should execute dynamic content scripts in the right order', async () => {
 		await expect(page).toMatchElement('.dynamic + .dynamic-code');
 	});
 
