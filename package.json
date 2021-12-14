@@ -64,6 +64,7 @@
 		]
 	},
 	"dependencies": {
+		"webext-content-scripts": "^0.11.1",
 		"webext-patterns": "^1.1.1",
 		"webext-polyfill-kinda": "^0.9.0"
 	},
