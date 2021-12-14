@@ -63,7 +63,7 @@ export default async function registerContentScript(
 	const matchesRegex = patternToRegex(...matches);
 	const excludeMatchesRegex = patternToRegex(...excludeMatches ?? []);
 
-	const inject = async (url: string, tabId: number, frameId: number = 0) => {
+	const inject = async (url: string, tabId: number, frameId = 0) => {
 		if (
 			!matchesRegex.test(url) // Manual `matches` glob matching
 			|| excludeMatchesRegex.test(url) // Manual `exclude_matches` glob matching
