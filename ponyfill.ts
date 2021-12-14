@@ -40,6 +40,91 @@ async function wasPreviouslyLoaded(
 	return executeFunction(target, loadCheck, arg);
 }
 
+interface InjectionDetails {
+	tabId: number;
+	frameId?: number;
+	matchAboutBlank?: boolean;
+	allFrames?: boolean;
+	runAt?: browser.extensionTypes.RunAt;
+	files: Array<{
+		code: string;
+	} | {
+		file: string;
+	}>;
+}
+
+async function insertCSS({
+	tabId,
+	frameId,
+	files,
+	allFrames,
+	matchAboutBlank,
+	runAt
+}: InjectionDetails): Promise<void> {
+	for (const content of files) {
+		if (gotScripting) {
+			void chrome.scripting.insertCSS({
+				target: {
+					tabId,
+					frameIds: arrayOrUndefined(frameId),
+					allFrames,
+				},
+				files: 'file' in content ? [content.file] : undefined,
+				css: 'code' in content ? content.code : undefined,
+			});
+		} else {
+			void chromeP.tabs.insertCSS(tabId, {
+				...content,
+				matchAboutBlank,
+				allFrames,
+				frameId,
+				runAt: runAt ?? 'document_start', // CSS should prefer `document_start` when unspecified
+			});
+		}
+	}
+}
+
+async function executeScript({
+	tabId,
+	frameId,
+	files,
+	allFrames,
+	matchAboutBlank,
+	runAt
+}: InjectionDetails): Promise<void> {
+	let lastInjection: Promise<unknown> | undefined;
+	for (const content of files) {
+		if (gotScripting) {
+			if ('code' in content) {
+				throw new Error('chrome.scripting does not support injecting strings of `code`');
+			}
+
+			void chrome.scripting.executeScript({
+				target: {
+					tabId,
+					frameIds: arrayOrUndefined(frameId),
+					allFrames,
+				},
+				files: [content.file],
+			});
+		} else {
+			// Files are executed in order, but code isn’t, so it must wait the last script #31
+			if ('code' in content) {
+				// eslint-disable-next-line no-await-in-loop -- On purpose, to serialize injection
+				await lastInjection;
+			}
+
+			lastInjection = chromeP.tabs.executeScript(tabId, {
+				...content,
+				matchAboutBlank,
+				allFrames,
+				frameId,
+				runAt,
+			});
+		}
+	}
+}
+
 // The callback is only used by webextension-polyfill
 export default async function registerContentScript(
 	contentScriptOptions: CS.RegisteredContentScriptOptions,
@@ -73,59 +158,21 @@ export default async function registerContentScript(
 			return;
 		}
 
-		for (const content of css) {
-			if (gotScripting) {
-				void chrome.scripting.insertCSS({
-					target: {
-						tabId,
-						frameIds: arrayOrUndefined(frameId),
-						allFrames,
-					},
-					files: 'file' in content ? [content.file] : undefined,
-					css: 'code' in content ? content.code : undefined,
-				});
-			} else {
-				void chromeP.tabs.insertCSS(tabId, {
-					...content,
-					matchAboutBlank,
-					allFrames,
-					frameId,
-					runAt: runAt ?? 'document_start', // CSS should prefer `document_start` when unspecified
-				});
-			}
-		}
+		insertCSS({
+			tabId,
+			frameId,
+			files: css,
+			matchAboutBlank,
+			runAt,
+		});
 
-		let lastInjection: Promise<unknown> | undefined;
-		for (const content of js) {
-			if (gotScripting) {
-				if ('code' in content) {
-					throw new Error('chrome.scripting does not support injecting strings of `code`');
-				}
-
-				void chrome.scripting.executeScript({
-					target: {
-						tabId,
-						frameIds: arrayOrUndefined(frameId),
-						allFrames,
-					},
-					files: [content.file],
-				});
-			} else {
-				// Files are executed in order, but code isn’t, so it must wait the last script #31
-				if ('code' in content) {
-					// eslint-disable-next-line no-await-in-loop -- On purpose, to serialize injection
-					await lastInjection;
-				}
-
-				lastInjection = chromeP.tabs.executeScript(tabId, {
-					...content,
-					matchAboutBlank,
-					allFrames,
-					frameId,
-					runAt,
-				});
-			}
-		}
+		await executeScript({
+			tabId,
+			frameId,
+			files: js,
+			matchAboutBlank,
+			runAt,
+		});
 	};
 
 	const tabListener = async (
