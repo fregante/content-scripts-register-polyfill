@@ -27,3 +27,11 @@ jobs:
       - run: sudo apt-get install xvfb
       - run: npm ci
       - run: xvfb-run --auto-servernum npm run jest
+
+  Test-Firefox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get install xvfb
+      - run: PUPPETEER_PRODUCT=firefox npm ci
+      - run: xvfb-run --auto-servernum npm run jest
