@@ -32,7 +32,8 @@ async function wasPreviouslyLoaded(
 		return wasLoaded;
 	};
 
-	return executeFunction(target, loadCheck, arg);
+	// Stringify the received arg as a hash, to fix the situation where every object gets converted to `[object Object]`.
+	return executeFunction(target, loadCheck, JSON.stringify(arg));
 }
 
 // The callback is only used by webextension-polyfill
