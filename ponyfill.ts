@@ -20,7 +20,7 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 
 async function wasPreviouslyLoaded(
 	target: Target,
-	arg: Record<string, any>,
+	assets: Record<string, any>,
 ): Promise<boolean> {
 	// Checks and sets a global variable
 	const loadCheck = (key: string): boolean => {
@@ -32,7 +32,8 @@ async function wasPreviouslyLoaded(
 		return wasLoaded;
 	};
 
-	return executeFunction(target, loadCheck, arg);
+	// The assets object is used as a key on `document`
+	return executeFunction(target, loadCheck, JSON.stringify(assets));
 }
 
 // The callback is only used by webextension-polyfill
