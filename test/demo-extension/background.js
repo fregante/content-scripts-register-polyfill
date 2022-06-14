@@ -1,4 +1,4 @@
-import contentScriptsRegister from '../../ponyfill';
+import contentScriptsRegister from '../../ponyfill.js';
 
 console.log('Background loaded');
 
