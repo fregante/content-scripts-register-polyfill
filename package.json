@@ -53,7 +53,7 @@
 			"@typescript-eslint/triple-slash-reference": "off",
 			"import/extensions": "off",
 			"import/no-unassigned-import": "off",
-			"node/file-extension-in-import": "off"
+			"n/file-extension-in-import": "off"
 		}
 	},
 	"jest": {
@@ -64,21 +64,21 @@
 		]
 	},
 	"dependencies": {
-		"webext-content-scripts": "^1.0.1",
+		"webext-content-scripts": "^1.0.2",
 		"webext-patterns": "^1.1.1",
 		"webext-polyfill-kinda": "^0.10.0"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.0.1",
+		"@parcel/config-webextension": "2.6.0",
 		"@sindresorhus/tsconfig": "^3.0.1",
-		"@types/chrome": "^0.0.188",
-		"@types/firefox-webext-browser": "^94.0.0",
-		"jest": "^27.3.1",
-		"jest-puppeteer": "^6.0.0",
-		"parcel": "^2.0.1",
-		"puppeteer": "^11.0.0",
-		"typescript": "^4.4.4",
-		"xo": "^0.49.0"
+		"@types/chrome": "^0.0.190",
+		"@types/firefox-webext-browser": "^94.0.1",
+		"jest": "^28.1.1",
+		"jest-puppeteer": "^6.1.0",
+		"parcel": "2.6.0",
+		"puppeteer": "^14.4.0",
+		"typescript": "^4.7.3",
+		"xo": "^0.50.0"
 	},
 	"targets": {
 		"main": false,

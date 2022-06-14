@@ -1,7 +1,10 @@
 /* globals page */
 
 import {describe, beforeAll, it} from '@jest/globals';
-import expect from 'expect-puppeteer';
+import puppeteer from 'expect-puppeteer';
+
+// https://github.com/smooth-code/jest-puppeteer/commit/bcd0415#r76081519
+const expect = puppeteer.default;
 
 async function expectToNotMatchElement(window, selector) {
 	try {
