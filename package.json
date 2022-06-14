@@ -53,7 +53,7 @@
 			"@typescript-eslint/triple-slash-reference": "off",
 			"import/extensions": "off",
 			"import/no-unassigned-import": "off",
-			"node/file-extension-in-import": "off"
+			"n/file-extension-in-import": "off"
 		}
 	},
 	"jest": {
