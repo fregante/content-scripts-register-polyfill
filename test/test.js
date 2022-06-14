@@ -1,4 +1,5 @@
 /* globals page */
+/* Keep file in sync with https://github.com/fregante/webext-dynamic-content-scripts/blob/main/test/test.js */
 
 import {describe, beforeAll, it} from '@jest/globals';
 import puppeteer from 'expect-puppeteer';

@@ -1,14 +1,14 @@
-import contentScriptsRegister from '../../ponyfill';
+import 'content-scripts-register-polyfill';
 
 console.log('Background loaded');
 
-if (globalThis.browser?.contentScripts.register) {
+if (chrome.contentScripts.register.toString().includes('[native code]')) {
 	console.log('Using native implementation');
 } else {
 	console.log('Using polyfill');
 }
 
-(globalThis.browser?.contentScripts.register ?? contentScriptsRegister)({
+chrome.contentScripts.register({
 	allFrames: true,
 	matches: ['https://iframe-test-page.vercel.app/*'],
 	js: [
@@ -18,7 +18,7 @@ if (globalThis.browser?.contentScripts.register) {
 	css: [{file: 'dynamic.css'}],
 });
 
-(globalThis.browser?.contentScripts.register ?? contentScriptsRegister)({
+chrome.contentScripts.register({
 	allFrames: true,
 	matches: ['https://fregante.github.io/pixiebrix-testing-ground/*'],
 	excludeMatches: ['https://fregante.github.io/pixiebrix-testing-ground/Parent-page*'],
