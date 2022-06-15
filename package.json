@@ -80,11 +80,6 @@
 		"typescript": "^4.7.3",
 		"xo": "^0.50.0"
 	},
-	"alias": {
-		"these-are-helpers-for-parcel-tests": "yolo",
-		"./ponyfill.js": "./ponyfill.ts",
-		"content-scripts-register-polyfill": "./index.ts"
-	},
 	"targets": {
 		"main": false,
 		"default": {
