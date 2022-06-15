@@ -9,49 +9,30 @@
 		"https://fregante.github.io/*"
 	],
 	"background": {
-		"scripts": [
-			"background.js"
-		]
+		"scripts": ["background.js"]
 	},
 	"content_scripts": [
 		{
 			"all_frames": true,
-			"matches": [
-				"https://iframe-test-page.vercel.app/*"
-			],
-			"js": [
-				"static.js"
-			],
-			"css": [
-				"static.css"
-			]
+			"matches": ["https://iframe-test-page.vercel.app/*"],
+			"js": ["static.js"],
+			"css": ["static.css"]
 		},
 		{
 			"all_frames": true,
-			"matches": [
-				"https://iframe-test-page-n786423ca-fregante.vercel.app/*"
-			],
-			"js": [
-				"static.js"
-			],
-			"css": [
-				"static.css"
-			]
+			"matches": ["https://iframe-test-page-n786423ca-fregante.vercel.app/*"],
+			"js": ["static.js"],
+			"css": ["static.css"]
 		},
 		{
 			"all_frames": true,
-			"matches": [
-				"https://fregante.github.io/pixiebrix-testing-ground/*"
-			],
+			"matches": ["https://fregante.github.io/pixiebrix-testing-ground/*"],
 			"exclude_matches": [
 				"https://fregante.github.io/pixiebrix-testing-ground/Parent-page*"
 			],
-			"js": [
-				"static.js"
-			],
-			"css": [
-				"static.css"
-			]
+			"js": ["static.js"],
+			"css": ["static.css"]
 		}
-	]
+	],
+	"web_accessible_resources": ["*.js", "*.css"]
 }

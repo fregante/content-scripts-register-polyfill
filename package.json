@@ -33,8 +33,8 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"demo:build": "parcel build test/demo-extension/* --no-cache",
-		"demo:watch": "parcel watch test/demo-extension/* --no-cache --no-hmr",
+		"demo:build": "parcel build --no-cache",
+		"demo:watch": "parcel watch --no-cache --no-hmr",
 		"prejest": "npm run demo:build",
 		"jest": "NODE_OPTIONS=--experimental-vm-modules JEST_PUPPETEER_CONFIG=jest-puppeteer.config.cjs jest",
 		"prepack": "tsc --sourceMap false",
@@ -83,6 +83,7 @@
 	"targets": {
 		"main": false,
 		"default": {
+			"source": "./test/demo-extension/manifest.json",
 			"distDir": "./test/dist",
 			"sourceMap": {
 				"inline": true
