@@ -10,6 +10,9 @@ interface Target {
 	frameId: number;
 }
 
+const noMatchesError = 'Type error for parameter contentScriptOptions (Error processing matches: Array requires at least 1 items; you have 0) for contentScripts.register.';
+const noPermissionError = 'Permission denied to register a content script for ';
+
 const gotNavigation = typeof chrome === 'object' && 'webNavigation' in chrome;
 
 async function isOriginPermitted(url: string): Promise<boolean> {
@@ -45,7 +48,7 @@ export default async function registerContentScript(
 		js = [],
 		css = [],
 		matchAboutBlank,
-		matches,
+		matches = [],
 		excludeMatches,
 		runAt,
 	} = contentScriptOptions;
@@ -55,6 +58,17 @@ export default async function registerContentScript(
 	} else if (allFrames) {
 		console.warn('`allFrames: true` requires the `webNavigation` permission to work correctly: https://github.com/fregante/content-scripts-register-polyfill#permissions');
 	}
+
+	if (matches.length === 0) {
+		throw new Error(noMatchesError);
+	}
+
+	await Promise.all(
+		matches.map(async pattern => {
+			if (!await chromeP.permissions.contains({origins: [pattern]})) {
+				throw new Error(noPermissionError + pattern);
+			}
+		}));
 
 	const matchesRegex = patternToRegex(...matches);
 	const excludeMatchesRegex = patternToRegex(...excludeMatches ?? []);
