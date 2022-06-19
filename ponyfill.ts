@@ -110,7 +110,7 @@ export default async function registerContentScript(
 	): Promise<void> => {
 		// Only status updates are relevant
 		// No URL = no permission
-		if (status && url) {
+		if (status === 'loading' && url) {
 			void inject(url, tabId);
 		}
 	};
