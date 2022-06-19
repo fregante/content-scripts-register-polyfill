@@ -1,14 +1,9 @@
-import {executeFunction, injectContentScript} from 'webext-content-scripts';
+import {injectContentScript} from 'webext-content-scripts';
 import chromeP from 'webext-polyfill-kinda';
 import {patternToRegex} from 'webext-patterns';
 
 // https://www.typescriptlang.org/docs/handbook/namespaces.html#aliases
 import CS = browser.contentScripts;
-
-interface Target {
-	tabId: number;
-	frameId: number;
-}
 
 const targetErrors = /^No frame with id \d+ in tab \d+.$|^No tab with id: \d+.$|^The tab was closed.$|^The frame was removed.$/;
 
@@ -27,24 +22,6 @@ async function isOriginPermitted(url: string): Promise<boolean> {
 	return chromeP.permissions.contains({
 		origins: [new URL(url).origin + '/*'],
 	});
-}
-
-async function wasPreviouslyLoaded(
-	target: Target,
-	assets: Record<string, any>,
-): Promise<boolean> {
-	// Checks and sets a global variable
-	const loadCheck = (key: string): boolean => {
-		// @ts-expect-error "No index signature"
-		const wasLoaded = document[key] as boolean;
-
-		// @ts-expect-error "No index signature"
-		document[key] = true;
-		return wasLoaded;
-	};
-
-	// The assets object is used as a key on `document`
-	return executeFunction(target, loadCheck, JSON.stringify(assets));
 }
 
 // The callback is only used by webextension-polyfill
@@ -86,7 +63,6 @@ export default async function registerContentScript(
 			!matchesRegex.test(url) // Manual `matches` glob matching
 			|| excludeMatchesRegex.test(url) // Manual `exclude_matches` glob matching
 			|| !await isOriginPermitted(url) // Without this, we might have temporary access via accessTab
-			|| await wasPreviouslyLoaded({tabId, frameId}, {js, css}) // Avoid double-injection
 		) {
 			return;
 		}
