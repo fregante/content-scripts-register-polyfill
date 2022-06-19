@@ -5,6 +5,11 @@
 
 > WebExtensions: Polyfill for [browser.contentScripts.register()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) for Chrome and Safari.
 
+> **Note**
+> You should prefer [chrome.scripting.registerContentScripts()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/registerContentScripts) where available: Chrome Manifest v3, Firefox 102+.
+
+> **Warning**
+
 ## Install
 
 You can download the [standalone bundle](https://bundle.fregante.com/?pkg=content-scripts-register-polyfill) and include it in your `manifest.json`.
@@ -47,7 +52,7 @@ const registeredScript = await browser.contentScripts.register({
 
 ### Usage as ponyfill
 
-This package also exports a [ponyfill](https://ponyfill.com/), meaning you can also use it as a normal API isntead of treating it as a polyfill. This way it will always use the current code and never rely on Firefox’ native implementation.
+This package also exports a [ponyfill](https://ponyfill.com/), meaning you can also use it as a normal API instead of treating it as a polyfill. This way it will always use the current code and never rely on Firefox’ native implementation.
 
 ```js
 import registerContentScript from 'content-scripts-register-polyfill/ponyfill.js';
