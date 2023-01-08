@@ -5,18 +5,10 @@ import {patternToRegex} from 'webext-patterns';
 // https://www.typescriptlang.org/docs/handbook/namespaces.html#aliases
 import CS = browser.contentScripts;
 
-const targetErrors = /^No frame with id \d+ in tab \d+.$|^No tab with id: \d+.$|^The tab was closed.$|^The frame was removed.$/;
-
 const noMatchesError = 'Type error for parameter contentScriptOptions (Error processing matches: Array requires at least 1 items; you have 0) for contentScripts.register.';
 const noPermissionError = 'Permission denied to register a content script for ';
 
 const gotNavigation = typeof chrome === 'object' && 'webNavigation' in chrome;
-
-function ignoreTargetErrors(error: Error) {
-	if (!targetErrors.test(error?.message)) {
-		throw error;
-	}
-}
 
 async function isOriginPermitted(url: string): Promise<boolean> {
 	return chromeP.permissions.contains({
@@ -76,7 +68,9 @@ export default async function registerContentScript(
 			js,
 			matchAboutBlank,
 			runAt,
-		}).catch(ignoreTargetErrors);
+		}, {
+			ignoreTargetErrors: true,
+		});
 	};
 
 	const tabListener = async (
