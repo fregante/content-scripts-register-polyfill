@@ -1,6 +1,6 @@
 {
 	"name": "content-scripts-register-polyfill",
-	"version": "4.0.0",
+	"version": "4.0.1",
 	"description": "Chrome/Safari extension polyfill for Firefox's browser.contentScripts.register()",
 	"keywords": [
 		"browser",
