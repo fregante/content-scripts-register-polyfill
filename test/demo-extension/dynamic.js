@@ -1,11 +1,11 @@
-document.body.insertAdjacentHTML(
+document.documentElement.insertAdjacentHTML(
 	'afterBegin',
 	`
 		<span class="dynamic" style="
 			display: inline-block;
 			padding: 4px;
 			font-size: 20px;
-			border: solid 4px cornflowerblue;
+			border: solid 4px silver;
 		">
 			DYNAMIC JS LOADED
 		</span>

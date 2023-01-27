@@ -5,7 +5,7 @@ document.body.insertAdjacentHTML(
 			display: inline-block;
 			padding: 4px;
 			font-size: 20px;
-			border: solid 4px papayawhip;
+			border: solid 4px gray;
 		">
 			JS LOADED
 		</span>

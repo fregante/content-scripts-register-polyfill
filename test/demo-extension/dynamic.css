@@ -2,7 +2,7 @@ html:before {
 	content: 'DYNAMIC CSS LOADED';
 	padding: 4px;
 	font-size: 20px;
-	background: cornflowerblue;
+	background: silver;
 	border: solid 4px transparent;
 	display: inline-block;
 }
