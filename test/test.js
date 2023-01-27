@@ -108,7 +108,7 @@ describe('iframe', () => {
 let iframeOfExcludedParent;
 describe('excludeMatches', () => {
 	beforeAll(async () => {
-		await page.goto('https://fregante.github.io/pixiebrix-testing-ground/Parent-page?iframe=./Framed-page');
+		await page.goto('https://alt-ephiframe.vercel.app/Parent-page?iframe=./Framed-page');
 		const elementHandle = await page.waitForSelector('iframe');
 		iframeOfExcludedParent = await elementHandle.contentFrame();
 	});

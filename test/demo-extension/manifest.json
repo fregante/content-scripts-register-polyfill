@@ -6,7 +6,7 @@
 		"webNavigation",
 		"https://ephiframe.vercel.app/*",
 		"https://iframe-test-page-n786423ca-fregante.vercel.app/*",
-		"https://fregante.github.io/*"
+		"https://alt-ephiframe.vercel.app/*"
 	],
 	"background": {
 		"scripts": ["background.js"]
@@ -26,9 +26,9 @@
 		},
 		{
 			"all_frames": true,
-			"matches": ["https://fregante.github.io/pixiebrix-testing-ground/*"],
+			"matches": ["https://alt-ephiframe.vercel.app/*"],
 			"exclude_matches": [
-				"https://fregante.github.io/pixiebrix-testing-ground/Parent-page*"
+				"https://alt-ephiframe.vercel.app/Parent-page*"
 			],
 			"js": ["static.js"],
 			"css": ["static.css"]
