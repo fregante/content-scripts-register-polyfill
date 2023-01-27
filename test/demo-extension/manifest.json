@@ -5,7 +5,7 @@
 	"permissions": [
 		"webNavigation",
 		"https://ephiframe.vercel.app/*",
-		"https://iframe-test-page-n786423ca-fregante.vercel.app/*",
+		"https://extra-ephiframe.vercel.app/*",
 		"https://alt-ephiframe.vercel.app/*"
 	],
 	"background": {
@@ -20,7 +20,7 @@
 		},
 		{
 			"all_frames": true,
-			"matches": ["https://iframe-test-page-n786423ca-fregante.vercel.app/*"],
+			"matches": ["https://extra-ephiframe.vercel.app/*"],
 			"js": ["static.js"],
 			"css": ["static.css"]
 		},
