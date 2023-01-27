@@ -10,7 +10,7 @@ if (globalThis.browser?.contentScripts.register) {
 
 (globalThis.browser?.contentScripts.register ?? contentScriptsRegister)({
 	allFrames: true,
-	matches: ['https://iframe-test-page.vercel.app/*'],
+	matches: ['https://ephiframe.vercel.app/*'],
 	js: [
 		{file: 'dynamic.js'},
 		{code: 'document.body.insertAdjacentHTML(\'beforeEnd\', \'<p class="dynamic-code">This should be second</p>\');'},

@@ -1,5 +1,14 @@
 document.body.insertAdjacentHTML(
-	'beforeEnd',
-	'<p class="static">Static script loaded',
+	'afterBegin',
+	`
+		<span class="static" style="
+			display: inline-block;
+			padding: 4px;
+			font-size: 20px;
+			border: solid 4px papayawhip;
+		">
+			JS LOADED
+		</span>
+	`,
 );
-console.log('Static script loaded', new Date());
+console.log('Content script loaded', new Date());
