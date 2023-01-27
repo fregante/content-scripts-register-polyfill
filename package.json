@@ -95,8 +95,8 @@
 		"sourceDir": "test/dist",
 		"run": {
 			"startUrl": [
-				"https://iframe-test-page.vercel.app/",
-				"https://iframe-test-page.vercel.app/cross-origin-parent.html"
+				"https://ephiframe.vercel.app/Parent-page?iframe=./Framed-page",
+				"https://ephiframe.vercel.app/Parent-page?iframe=https://extra-ephiframe.vercel.app/Cross-domain-iframe"
 			]
 		}
 	}

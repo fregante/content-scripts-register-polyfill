@@ -4,9 +4,9 @@
 	"manifest_version": 2,
 	"permissions": [
 		"webNavigation",
-		"https://iframe-test-page.vercel.app/*",
-		"https://iframe-test-page-n786423ca-fregante.vercel.app/*",
-		"https://fregante.github.io/*"
+		"https://ephiframe.vercel.app/*",
+		"https://extra-ephiframe.vercel.app/*",
+		"https://alt-ephiframe.vercel.app/*"
 	],
 	"background": {
 		"scripts": ["background.js"]
@@ -14,21 +14,21 @@
 	"content_scripts": [
 		{
 			"all_frames": true,
-			"matches": ["https://iframe-test-page.vercel.app/*"],
+			"matches": ["https://ephiframe.vercel.app/*"],
 			"js": ["static.js"],
 			"css": ["static.css"]
 		},
 		{
 			"all_frames": true,
-			"matches": ["https://iframe-test-page-n786423ca-fregante.vercel.app/*"],
+			"matches": ["https://extra-ephiframe.vercel.app/*"],
 			"js": ["static.js"],
 			"css": ["static.css"]
 		},
 		{
 			"all_frames": true,
-			"matches": ["https://fregante.github.io/pixiebrix-testing-ground/*"],
+			"matches": ["https://alt-ephiframe.vercel.app/*"],
 			"exclude_matches": [
-				"https://fregante.github.io/pixiebrix-testing-ground/Parent-page*"
+				"https://alt-ephiframe.vercel.app/Parent-page*"
 			],
 			"js": ["static.js"],
 			"css": ["static.css"]
