@@ -11,7 +11,7 @@ const noPermissionError = 'Permission denied to register a content script for ';
 const gotNavigation = typeof chrome === 'object' && 'webNavigation' in chrome;
 
 async function isOriginPermitted(url: string): Promise<boolean> {
-	return chromeP.permissions.contains({
+	chromeP.permissions.contains({
 		origins: [new URL(url).origin + '/*'],
 	});
 }
