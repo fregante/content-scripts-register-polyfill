@@ -3,5 +3,8 @@
 import CS = browser.contentScripts;
 
 declare namespace chrome.contentScripts {
-	const register = CS.register;
+	function register(
+		contentScriptOptions: CS.RegisteredContentScriptOptions,
+		callback?: (contentScript: CS.RegisteredContentScript) => void
+	): Promise<CS.RegisteredContentScript>;
 }
