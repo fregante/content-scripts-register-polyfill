@@ -5,8 +5,8 @@
 
 > WebExtensions: Polyfill for [browser.contentScripts.register()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/contentScripts/register) for Chrome and Safari.
 
-> **Warning** `contentScripts.register` by design is not compatible with Event Pages (MV2) and Service Workers (MV3). 
-> 
+> **Warning** `contentScripts.register` by design is not compatible with Event Pages (MV2) and Service Workers (MV3).
+>
 > You should prefer [chrome.scripting.registerContentScripts()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/registerContentScripts) where available: Chrome Manifest v3, Firefox 102+. Extended details on how they differ can be found in issue [#11](https://github.com/fregante/content-scripts-register-polyfill/issues/11#issuecomment-1157679839)
 
 ## Install
@@ -79,7 +79,7 @@ Starting in v3, the types are no longer included. You have a few options:
   ```
 - if you want to use it as `chrome.contentScripts.register()` or as a [ponyfill](#ponyfill), you might need to install two type packages:
   ```sh
-  npm install -D @types/firefox-webext-browser @types/chrome
+  npm install -D @types/webextension-polyfill @types/chrome
   ```
 
 ## Permission
